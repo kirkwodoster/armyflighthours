@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_verify_email/page/home_page.dart';
 import 'package:firebase_auth_verify_email/utils.dart';
@@ -47,7 +48,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
 
-    if (isEmailVerified) timer?.cancel();
+    if (isEmailVerified) {
+      // If email is verified, add user to Firestore
+      String email = FirebaseAuth.instance.currentUser!.email ?? 'Unknown';
+      await submitData(email);
+      timer?.cancel();
+    }
   }
 
   Future sendVerificationEmail() async {
@@ -60,6 +66,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       setState(() => canResendEmail = true);
     } catch (e) {
       Utils.showSnackBar(e.toString());
+    }
+  }
+
+  Future<void> submitData(String email) async {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    // Check if user already exists in Firestore
+    DocumentSnapshot userSnapshot = await users.doc(email).get();
+
+    if (!userSnapshot.exists) {
+      // If user does not exist, add new user
+      return users
+          .doc(email)
+          .set({
+            'email': email,
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    } else {
+      print("User already exists");
     }
   }
 

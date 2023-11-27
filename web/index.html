@@ -33,6 +33,53 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
+  <meta name="google-signin-client_id" content="783611860349-bo11larhltn705nouek2l3fo0v8ifdi6.apps.googleusercontent.com">
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+
+<!-- Add for Firebase Storage: https://pub.dev/packages/firebase_storage -->
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-storage.js"></script>
+
+<!-- Add for Cloud Firestore: https://pub.dev/packages/cloud_firestore -->
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+
+<!-- Add for Firebase Auth: https://pub.dev/packages/firebase_auth -->
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-messaging.js"></script>
+<!-- Add for Firebase Messaging: https://pub.dev/packages/firebase_messaging
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-messaging.js"></script>
+-->
+
+<!-- Add for Firebase Analytics: https://pub.dev/packages/firebase_analytics
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+-->
+
+<!-- Add for Cloud Functions: https://pub.dev/packages/cloud_functions
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-functions.js"></script>
+-->
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpzdCJeTJFvSeGQXW_i8XmvYz-ZQ0anNY",
+      authDomain: "fir-auth-verify-email.firebaseapp.com",
+      projectId: "fir-auth-verify-email",
+      storageBucket: "fir-auth-verify-email.appspot.com",
+      messagingSenderId: "783611860349",
+      appId: "1:783611860349:web:62975f88ab0c64bb8e2814"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+  </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
