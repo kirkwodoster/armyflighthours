@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_verify_email/widget/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -23,24 +23,27 @@ class GoogleSignInProvider extends ChangeNotifier {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      // print('access token: ');
+      // print(googleAuth.accessToken);
+      // print(googleAuth.idToken);
+      // print('idToken:');
 
-      // Check if user is already authenticated
-      User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        // If user is not authenticated, authenticate user and add user to Firestore
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        await submitData(googleUser.displayName ?? 'Unknown',
-            googleUser.email ?? 'Unknown', googleUser.photoUrl ?? 'Unknown');
-        userCheck = 'NewUser';
-        print(userCheck);
-        //String monthStatus = await checkMonthKey(user.id);
-        //print(monthStatus);
-        //await userHasMonthEntry(user.id);
-        //await AlertDialogProvider.showAlertDialog(context);
-      } else {
-        userCheck = 'returnUser';
-        print(userCheck);
-        print("User is already authenticated");
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final uid = userCredential.user!.uid;
+      print(uid);
+      // Check if document exists
+      final snapShot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      // If document doesn't exist, add it
+
+      if (!snapShot.exists) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'name': googleUser.displayName,
+          'email': googleUser.email,
+        });
       }
     } catch (e) {
       print(e.toString());

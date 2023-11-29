@@ -1,7 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_verify_email/provider/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,122 +8,146 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ValueNotifier<String> userCheckNotifier = ValueNotifier<String>('');
-  String? _selectedValue;
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Signed In as',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 8),
+            Text(
+              user.email!,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 40),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.fromHeight(50),
+              ),
+              icon: Icon(Icons.arrow_back, size: 32),
+              label: Text(
+                'Sign Out',
+                style: TextStyle(fontSize: 24),
+              ),
+              onPressed: () => FirebaseAuth.instance.signOut(),
+            ),
+            CheckUserMonth()
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CheckUserMonth extends StatefulWidget {
+  @override
+  _CheckUserMonthState createState() => _CheckUserMonthState();
+}
+
+class _CheckUserMonthState extends State<CheckUserMonth> {
+  String? selectedItem;
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
-    final userCheck = Provider.of<GoogleSignInProvider>(context).userCheck;
 
-    // Update userCheckNotifier whenever userCheck changes
-    userCheckNotifier.value = userCheck;
+    return FutureBuilder<DocumentSnapshot>(
+      future:
+          FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
 
-    return ValueListenableBuilder<String>(
-      valueListenable: userCheckNotifier,
-      builder: (context, value, child) {
-        if (value == 'NewUser') {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Select Birth Month'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text('Welcome, new user!'),
-                    SizedBox(height: 20),
-                    DropdownButton<String>(
-                      value: _selectedValue,
-                      icon: const Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: const TextStyle(color: Colors.deepPurple),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.deepPurpleAccent,
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedValue = newValue!;
-                        });
-                      },
-                      items: <String>[
-                        'Jan',
-                        'Feb',
-                        'Mar',
-                        'Apr',
-                        'May',
-                        'Jun',
-                        'Jul',
-                        'Aug',
-                        'Sep',
-                        'Oct',
-                        'Nov',
-                        'Dec'
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+          Map<String, dynamic>? data =
+              snapshot.data!.data() as Map<String, dynamic>?;
+          print(user.uid);
+
+          // print(FirebaseFirestore.instance
+          //     .collection('users')
+          //     .doc(user.uid)
+          //     .get());
+          if (data != null && data.containsKey('month')) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Select a month'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DropdownButton<String>(
+                          value: selectedItem,
+                          items: [
+                            'January',
+                            'February',
+                            'March',
+                            'April',
+                            'May',
+                            'June',
+                            'July',
+                            'August',
+                            'September',
+                            'October',
+                            'November',
+                            'December'
+                          ].map((String item) {
+                            return DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(item),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedItem = newValue;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            );
-          });
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (selectedItem != null) {
+                            print('Selected month: $selectedItem');
+                          }
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            });
+            return SizedBox.shrink(); // return an empty widget
+          }
+
+          return Text('User has month');
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Home'),
-          ),
-          body: Padding(
-            padding: EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Signed In as',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  user.email!,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 40),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size.fromHeight(50),
-                  ),
-                  icon: Icon(Icons.arrow_back, size: 32),
-                  label: Text(
-                    'Sign Out',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  onPressed: () => FirebaseAuth.instance.signOut(),
-                ),
-              ],
-            ),
-          ),
-        );
+        return CircularProgressIndicator();
       },
     );
-  }
-
-  @override
-  void dispose() {
-    userCheckNotifier.dispose();
-    super.dispose();
   }
 }
