@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_verify_email/page/on_board.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,26 +11,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final email = FirebaseAuth.instance.currentUser?.email!;
 
     return Scaffold(
+      drawer: NavigationDrawer(),
       appBar: AppBar(
-        title: Text('Home'),
-      ),
+          //title: Text('Home'),
+          ),
       body: Padding(
         padding: EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Signed In as',
+              email.toString(),
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 8),
-            Text(
-              user.email!,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            // Text(
+            //   //user.email!,
+            //   //style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            // ),
             SizedBox(height: 40),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -40,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                 'Sign Out',
                 style: TextStyle(fontSize: 24),
               ),
-              onPressed: () => FirebaseAuth.instance.signOut(),
+              onPressed: () {},
             ),
             CheckUserMonth()
           ],
@@ -50,18 +52,125 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class NavigationDrawer extends StatefulWidget {
+  NavigationDrawer({Key? key}) : super(key: key);
+
+  @override
+  _NavigationDrawerState createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> {
+  final User user = FirebaseAuth.instance.currentUser!;
+  String userEmail = 'email: ${FirebaseAuth.instance.currentUser!.email}';
+  String? email = FirebaseAuth.instance.currentUser?.email!;
+
+  @override
+  Widget build(BuildContext context) => Drawer(
+          child: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+            buildHeader(context),
+            buildMenuItems(context),
+          ])));
+
+  Widget buildHeader(BuildContext context) => Material(
+        color: Colors.blue.shade700,
+        child: InkWell(
+          onTap: () {
+            // close navigation drawer before
+            Navigator.pop(context);
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+              top: 24 + MediaQuery.of(context).padding.top,
+              bottom: 24,
+            ),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 52,
+                  backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Sarah Abs',
+                  style: TextStyle(fontSize: 28, color: Colors.white),
+                ),
+                Text(
+                  email!,
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+  Widget buildMenuItems(BuildContext context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Wrap(
+          runSpacing: 16, // vertical spacing
+          children: [
+            ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text('Home'),
+                onTap: () {}
+                //     Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //   builder: (context) => const HomePage(),
+                // )),
+                ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Account'),
+              onTap: () {
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //   builder: (context) => const FavouritesPage(),
+                // ));
+
+                /// In case no Scaffold.drawer is added on 'FavouritesPage'
+                // // close navigation drawer before
+                // Navigator.pop(context);
+
+                // Navigator.of(context).push(MaterialPageRoute(
+                //   builder: (context) => const FavouritesPage(),
+                // ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.airplanemode_active),
+              title: const Text('Hours'),
+              onTap: () {},
+            ),
+            //const Divider(color: Colors.black54),
+            ListTile(
+              leading: const Icon(Icons.analytics),
+              title: const Text('Statistics'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Log Out'),
+              onTap: () => FirebaseAuth.instance.signOut(),
+            ),
+          ],
+        ),
+      );
+}
+
 class CheckUserMonth extends StatefulWidget {
   @override
   _CheckUserMonthState createState() => _CheckUserMonthState();
 }
 
 class _CheckUserMonthState extends State<CheckUserMonth> {
-  String? selectedItem;
+  String? selectedMonth;
+  final User user = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-
     return FutureBuilder<DocumentSnapshot>(
       future:
           FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
@@ -74,79 +183,16 @@ class _CheckUserMonthState extends State<CheckUserMonth> {
 
           Map<String, dynamic>? data =
               snapshot.data!.data() as Map<String, dynamic>?;
-          print(user.uid);
-
-          // print(FirebaseFirestore.instance
-          //     .collection('users')
-          //     .doc(user.uid)
-          //     .get());
-          if (data != null && data.containsKey('month')) {
+          if (data?.containsKey('month') != true) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Select a month'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        DropdownButton<String>(
-                          value: selectedItem,
-                          items: [
-                            'January',
-                            'February',
-                            'March',
-                            'April',
-                            'May',
-                            'June',
-                            'July',
-                            'August',
-                            'September',
-                            'October',
-                            'November',
-                            'December'
-                          ].map((String item) {
-                            return DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(item),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedItem = newValue;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cancel'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (selectedItem != null) {
-                            print('Selected month: $selectedItem');
-                          }
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('OK'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => OnBoardingScreen()));
             });
             return SizedBox.shrink(); // return an empty widget
           }
-
-          return Text('User has month');
         }
 
-        return CircularProgressIndicator();
+        return SizedBox.shrink();
       },
     );
   }
