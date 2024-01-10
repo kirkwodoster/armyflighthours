@@ -1,5 +1,7 @@
+import 'package:firebase_auth_verify_email/army_aircraft_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 
 class OnBoardingScreen extends StatefulWidget {
   @override
@@ -20,6 +22,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    
       body: Container(
         //height: double.infinity,
         //width: double.infinity,
@@ -36,27 +39,30 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Select Aircraft Type'),
+                Text('Select Airframe', style:TextStyle(fontSize: 25)),
                 SizedBox(height: 20),
                 RadioExample(),
                 SizedBox(height: 20),
-                Text('Input Total Hours and NVS'),
-                SizedBox(height: 20),
-                FloatInputForm(),
-                // SizedBox(height: 10),
-                Text('Select Date of Birth'),
-                SizedBox(height: 20),
-                MonthButton(),
-                SizedBox(height: 20),
+                
               ],
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [],
+              children: [
+                // Text('Input Total Hours and NVS'),
+                SizedBox(height: 20),
+                FloatInputForm(),
+               SizedBox(height: 10),
+                Text('Select Date of Birth'),
+                SizedBox(height: 20),
+                MonthButton(),
+                SizedBox(height: 20),],
+                
             ),
             // Stack(alignment: Alignment.center, children: [DateInput()])
             Column(
               children: [
+                
                 // TextField(
                 //   keyboardType: TextInputType.number,
                 //   inputFormatters: [
@@ -80,7 +86,9 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                     onPressed: () => controller.previousPage(
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
+                      
                     ),
+              
                   ),
                   TextButton(
                     child: const Text('Submit'),
@@ -104,6 +112,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                         onPressed: () => controller.nextPage(
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeInOut,
+                          
                         ),
                       ),
                     ],
@@ -123,12 +132,18 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                         ),
                       ),
                       TextButton(
-                        child: const Text('Next'),
-                        onPressed: () => controller.nextPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                        ),
+                      child: const Text('Next'),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() && selectedMonth != null) {
+                          controller.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                          print(selectedMonth.toString());
+                        }
+                      },
                       ),
+                      
                     ],
                   ),
                 ));
@@ -146,7 +161,6 @@ class _RadioExampleState extends State<RadioExample> {
   String? selectedButton;
 
   @override
-  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     // double screenHeight = MediaQuery.of(context).size.height;
@@ -154,112 +168,134 @@ class _RadioExampleState extends State<RadioExample> {
     return Container(
       width: screenWidth * 0.7,
       // height: screenHeight * 0.15,
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Container(
-            width: 90,
-            height: 80,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: Material(
-                color: myTheme.primary,
-                //shape: CircleBorder(),
-                elevation: 8,
-                borderRadius: BorderRadius.circular(15),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedButton = 'Apache';
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.network(
-                          'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80'), // Add your image URL here
-                      Text(
-                        'Apache',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          OutlinedButton.icon(
-            onPressed: () {
-              setState(() {
-                selectedButton = 'Blackhawk';
-              });
-            },
-            icon: Icon(Icons.flight_outlined),
-            label: Text('Blackhawk'),
-            style: ButtonStyle(
-              side: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                if (selectedButton == 'Blackhawk') {
-                  return BorderSide(color: myTheme.error);
-                } else {
-                  return BorderSide(color: myTheme.primary);
-                }
-              }),
-              foregroundColor: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                if (selectedButton == 'Blackhawk') {
-                  return myTheme.error;
-                } else {
-                  return myTheme.primary;
-                }
-              }),
-            ),
-          ),
-          OutlinedButton.icon(
-            onPressed: () {
-              setState(() {
-                selectedButton = 'Chinook';
-              });
-            },
-            icon: Icon(Icons.flight_outlined),
-            label: Text('Chinook'),
-            style: ButtonStyle(
-              side: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                if (selectedButton == 'Chinook') {
-                  return BorderSide(color: myTheme.error);
-                } else {
-                  return BorderSide(color: myTheme.primary);
-                }
-              }),
-              foregroundColor: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                if (selectedButton == 'Chinook') {
-                  return myTheme.error;
-                } else {
-                  return myTheme.primary;
-                }
-              }),
-            ),
-          ),
+         Container(
+          width: 250,
+          height: 200,
+    child: TextButton(
+   onPressed: () {
+       setState(() {
+           selectedButton = 'Apache';
+       });
+   },
+   child: Column(
+       children: [
+           Padding(
+               padding: const EdgeInsets.only(right: 80, top: 30),
+               child: Icon(ArmyAircraft.apache, color: selectedButton == 'Apache' ? myTheme.error : myTheme.primary, size: 140.0),
+           ),
+           SizedBox(height: 10,),
+       ],
+   ),
+   style: ButtonStyle(
+       
+       foregroundColor: MaterialStateProperty.resolveWith(
+           (Set<MaterialState> states) {
+               if (states.contains(MaterialState.pressed)) {
+                  return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+               } else {
+                  return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+               }
+           }),
+   ),
+),
+
+  ),
+
+	SizedBox(height: 0),
+  Container(width: 250,
+          height: 200,
+    child: TextButton(
+     onPressed: () {
+     setState(() {
+     selectedButton = 'Blackhawk';
+     });
+     },
+     
+     child: Column(
+    //  mainAxisSize: MainAxisSize.min,
+     children: [
+     Padding(
+       padding: const EdgeInsets.only(right: 50),
+       child: Icon(ArmyAircraft.blackhawk, color: selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary, size: 200  ),
+     ),
+     SizedBox(height: 0,),
+    //  Text('Blackhawk', style: TextStyle(fontSize: 20, color: selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary)),
+     ],
+     ),
+     style: ButtonStyle(
+    
+     foregroundColor: MaterialStateProperty.resolveWith(
+     (Set<MaterialState> states) {
+     if (states.contains(MaterialState.pressed)) {
+       return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+     } else {
+       return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+     }
+     }),
+     ),
+    ),
+  ),
+
+SizedBox(height: 0),
+
+
+
+ Container(width: 250,
+          height: 200,
+    child: TextButton(
+     onPressed: () {
+     setState(() {
+     selectedButton = 'Chinook';
+     });
+     },
+     
+     child: Column(
+    //  mainAxisSize: MainAxisSize.min,
+     children: [
+     Padding(
+       padding: const EdgeInsets.only(right: 100, top: 20),
+       child: Icon(ArmyAircraft.chinook, color: selectedButton == 'Chinook' ? myTheme.error : myTheme.primary, size: 125),
+     ),SizedBox(height: 10,),
+    //  Text('Chinook', style: TextStyle(fontSize: 20, color: selectedButton == 'Chinook' ? myTheme.error : myTheme.primary)),
+     ],
+     ),
+     style: ButtonStyle(
+    
+     foregroundColor: MaterialStateProperty.resolveWith(
+     (Set<MaterialState> states) {
+     if (states.contains(MaterialState.pressed)) {
+       return selectedButton == 'Chinook' ? myTheme.error : myTheme.primary;
+     } else {
+       return selectedButton == 'Chinook' ? myTheme.error : myTheme.primary;
+     }
+     }),
+     ),
+    ),
+  ),
         ],
       ),
     );
   }
 }
-
+final _formKey = GlobalKey<FormState>();
 class FloatInputForm extends StatefulWidget {
   @override
+
+
   _FloatInputFormState createState() => _FloatInputFormState();
 }
 
 class _FloatInputFormState extends State<FloatInputForm> {
   final _firstController = TextEditingController();
   final _secondController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  
 
   @override
   Widget build(BuildContext context) {
+    
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -267,18 +303,24 @@ class _FloatInputFormState extends State<FloatInputForm> {
       key: _formKey,
       child: Container(
         width: screenWidth * 0.7,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: screenWidth * 0.25, // 80% of screen width
-              height: screenHeight * 0.15, // 10% of screen height
+               width: screenWidth * 0.45, // 80% of screen width
+              height: screenHeight * 0.02, // 10% of screen height
+              
+              child: Text('Total Hours')),
+              SizedBox(height:3),
+            Container(
+              width: screenWidth * 0.45, // 80% of screen width
+              height: screenHeight * 0.05, // 10% of screen height
               child: TextFormField(
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: "Total Hours",
+                  hintText: "  Hours",
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
                   enabledBorder: OutlineInputBorder(
@@ -291,22 +333,29 @@ class _FloatInputFormState extends State<FloatInputForm> {
                 keyboardType: TextInputType.number,
                 controller: _firstController,
                 validator: (value) {
-                  if (value != null && double.parse(value) < 50000) {
-                    return 'Please enter a valid float';
-                  }
-                  return null;
-                },
+                    double? parsedValue = double.tryParse(value!);
+                    if (parsedValue == null || parsedValue > 50000) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                    },
               ),
             ),
+            SizedBox(height: 5),
             Container(
-              width: screenWidth * 0.25,
-              height: screenHeight * 0.15,
+              width: screenWidth * 0.45, // 80% of screen width
+              height: screenHeight * 0.02, // 10% of screen height
+              child: Text('Total NVS')),
+              SizedBox(height:3),
+            Container(
+              width: screenWidth * 0.45,
+              height: screenHeight * 0.05,
               child: TextFormField(
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: "Total NVS",
+                  hintText: "  Hours",
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
                   enabledBorder: OutlineInputBorder(
@@ -319,10 +368,11 @@ class _FloatInputFormState extends State<FloatInputForm> {
                 keyboardType: TextInputType.number,
                 controller: _secondController,
                 validator: (value) {
-                  if (double.tryParse(value ?? '') == null) {
-                    return 'Please enter a valid float';
-                  }
-                  return null;
+                 double? parsedValue = double.tryParse(value!);
+                    if (parsedValue == null || parsedValue > 50000) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
                 },
               ),
             ),
@@ -421,6 +471,9 @@ class DOBFormatter extends TextInputFormatter {
   }
 }
 
+
+
+String? selectedMonth;
 class MonthButton extends StatefulWidget {
   const MonthButton({Key? key}) : super(key: key);
 
@@ -429,7 +482,7 @@ class MonthButton extends StatefulWidget {
 }
 
 class _MonthButtonState extends State<MonthButton> {
-  String? selectedMonth;
+  // String? selectedMonth;
 
   List<String> months = [
     'JAN',
@@ -448,9 +501,13 @@ class _MonthButtonState extends State<MonthButton> {
 
   @override
   Widget build(BuildContext context) {
+    
+     double screenWidth = MediaQuery.of(context).size.width;
+    // double screenHeight = MediaQuery.of(context).size.height;
     final myTheme = Theme.of(context).colorScheme;
     return Container(
-      width: 300,
+       width: screenWidth * 0.45,
+      // width: 300,
       child: Column(
         children: List.generate(4, (rowIndex) {
           return Row(
@@ -491,6 +548,9 @@ class _MonthButtonState extends State<MonthButton> {
           );
         }),
       ),
+      
     );
   }
 }
+
+
