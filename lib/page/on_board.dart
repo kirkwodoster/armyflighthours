@@ -1,6 +1,7 @@
+
 import 'package:firebase_auth_verify_email/army_aircraft_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 
 
 class OnBoardingScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
   final controller = PageController();
   bool isLastPage = false;
   bool isFirstPage = true;
+  
 
   @override
   void dispose() {
@@ -21,136 +23,266 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    
-      body: Container(
-        //height: double.infinity,
-        //width: double.infinity,
+  Widget build(BuildContext context) {
+
+    final myTheme = Theme.of(context).colorScheme;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    // physics: NeverScrollableScrollPhysics()
+
+    return SafeArea(
+        child: Scaffold(
+        resizeToAvoidBottomInset: true, // Set this to true
+        body: SingleChildScrollView(
+        child: Container(
+          height: screenHeight*.99,
         padding: const EdgeInsets.only(bottom: 80),
-        child: PageView(
-          controller: controller,
-          onPageChanged: (index) {
-            setState(() {
-              isLastPage = index == 2;
-              isFirstPage = index == 0;
-            });
-          },
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Select Airframe', style:TextStyle(fontSize: 25)),
-                SizedBox(height: 20),
-                RadioExample(),
-                SizedBox(height: 20),
-                
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Text('Input Total Hours and NVS'),
-                SizedBox(height: 20),
-                FloatInputForm(),
-               SizedBox(height: 10),
-                Text('Select Date of Birth'),
-                SizedBox(height: 20),
-                MonthButton(),
-                SizedBox(height: 20),],
-                
-            ),
-            // Stack(alignment: Alignment.center, children: [DateInput()])
-            Column(
-              children: [
-                
-                // TextField(
-                //   keyboardType: TextInputType.number,
-                //   inputFormatters: [
-                //     DOBFormatter(),
-                //   ],
-                // ),
-              ],
-            )
-          ],
-        ),
-      ),
-      bottomSheet: isLastPage
-          ? Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              height: 80,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    child: PageView(
+    allowImplicitScrolling: true,
+    physics: NeverScrollableScrollPhysics(), // Add this line
+    controller: controller,
+    onPageChanged: (index) {
+    setState(() {
+    isLastPage = index == 2;
+    isFirstPage = index == 0;
+    });
+    },
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextButton(
-                    child: const Text('Back'),
-                    onPressed: () => controller.previousPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeInOut,
-                      
-                    ),
-              
-                  ),
-                  TextButton(
-                    child: const Text('Submit'),
-                    onPressed: () {
-                      print(_RadioExampleState()._character.toString());
-                      ;
-                    },
-                  ),
+                  Text('SELECT AIRFRAME', style:TextStyle(fontSize: 25)),
+                  SizedBox(height: 20),
+                  RadioExample(),
+                  SizedBox(height: 20),
+
                 ],
               ),
-            )
-          : isFirstPage
-              ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  height: 80,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        child: const Text('Next'),
-                        onPressed: () => controller.nextPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                          
-                        ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Text('Input Total Hours and NVS'),
+                  // SizedBox(height: 20),
+                  // totalhoursInput(),
+                 SizedBox(height: 10),
+                 Form(
+                  key: _totalKey,
+                   child: Column(
+                     children: [
+                       userinputHours(
+                        label: 'Total Hours',
+                        controller: _totalHours),
+                      userinputHours(
+                        label: 'Total NVD Hours',
+                        controller: _totalNVD),
+                     ],
+                   ),
+                 ),
+
+
+                  Text('Select Month of Birth'),
+                  SizedBox(height: 20),
+                  MonthButton(),
+                  SizedBox(height: 20),],
+
+              ),
+              // Stack(alignment: Alignment.center, children: [DateInput()])
+              Column(
+                children: [
+
+
+             Form(key: _semiKey,
+             child: Column(children: [
+                        userinputHours(
+                        label: 'Current Semi Annual Total hours',
+                        controller: _totalsemiHours),
+                        userinputHours(
+                        label: 'Current Semi Annual Backseat hours',
+                        controller: _backSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual Frontseat hours',
+                        controller: _frontSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual NVS hours',
+                        controller: _nvsSemi),
+                            userinputHours(
+                        label: 'Current Semi Annual NVG Hours',
+                        controller: _nvgSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual Unaided hours',
+                        controller: _nunaidedSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual Hood/Weather hours',
+                        controller: _hwSemi),
+                         userinputHours(
+                        label: 'Current Semi Annual Total SIM Hours',
+                        controller: _simtotalSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual SIM Backset hours',
+                        controller: _bssimSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual SIM Frontseat hours',
+                        controller: _fssimSemi),
+                        userinputHours(
+                        label: 'Current Semi Annual G-COFT/E hours',
+                        controller: _fssimSemi),
+
+
+             ],))
+
+                ],
+              )
+            ],
+          ),
+        ),
+        ),
+        bottomSheet: isLastPage
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                height: 80,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: const Text('Back'),
+                      onPressed: () => controller.previousPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+
                       ),
-                    ],
-                  ),
-                )
-              : Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  height: 80,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        child: const Text('Back'),
-                        onPressed: () => controller.previousPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                        ),
-                      ),
-                      TextButton(
-                      child: const Text('Next'),
+
+                    ),
+                    TextButton(
+                      child: const Text('Submit'),
                       onPressed: () {
-                        if (_formKey.currentState!.validate() && selectedMonth != null) {
-                          controller.nextPage(
+                        print(_RadioExampleState()._character.toString());
+                        ;
+                      },
+                    ),
+                  ],
+                ),
+              )
+            : isFirstPage
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    height: 80,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: const Text('Next'),
+                          onPressed: () {
+                          if (selectedAirframe == null) {
+
+                            final selectAirframe = SnackBar(
+                              content: Center(
+                                child: Container(
+                                  height: 40,
+                                  width: screenWidth*.5,
+                                  padding: EdgeInsets.all(5
+                                  ),//screenWidth * .25,
+
+                                  decoration: BoxDecoration(
+
+                                       color: myTheme.errorContainer,
+                                       borderRadius: BorderRadius.all(Radius.circular(20))
+
+                                      ),
+                                  child: Center(child: Text('Select an Airframe', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold,)),
+
+                                  ),
+                                ),
+                              ),
+
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+
+
+
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(selectAirframe);
+
+                          }else{
+                              controller.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+
+                            );
+
+                          }
+                        },
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    height: 80,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          child: const Text('Back'),
+                          onPressed: () => controller.previousPage(
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.easeInOut,
-                          );
-                          print(selectedMonth.toString());
-                        }
-                      },
-                      ),
-                      
-                    ],
-                  ),
-                ));
+                          ),
+                        ),
+                        TextButton(
+                        child: const Text('Next'),
+                        onPressed: () {
+                          if (_totalKey.currentState!.validate() && selectedMonth != null) {
+                            controller.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            );
+
+                          }else if(selectedMonth == null){
+                            final selectAirframe = SnackBar(
+                              content: Center(
+                                child: Container(
+                                  height: 40,
+                                  width: screenWidth*.45,
+                                  padding: EdgeInsets.all(5
+                                  ),//screenWidth * .25,
+
+                                  decoration: BoxDecoration(
+
+                                       color: myTheme.errorContainer,
+                                       borderRadius: BorderRadius.all(Radius.circular(20))
+
+                                      ),
+                                  child: Center(child: Text('Select a Birth Month', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold,)),
+
+                                  ),
+                                ),
+                              ),
+
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+
+
+
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(selectAirframe);
+                          }
+                        },
+                        ),
+
+                      ],
+                    ),
+                  )),
+     );
+}
 }
 
-enum SingingCharacter { Apache, Blackhawk, Chinook }
 
+enum SingingCharacter { Apache, Blackhawk, Chinook }
+String? selectedAirframe;
 class RadioExample extends StatefulWidget {
   @override
   _RadioExampleState createState() => _RadioExampleState();
@@ -158,33 +290,33 @@ class RadioExample extends StatefulWidget {
 
 class _RadioExampleState extends State<RadioExample> {
   SingingCharacter? _character = SingingCharacter.Apache;
-  String? selectedButton;
+  //String? selectedAirframe;
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    // double screenHeight = MediaQuery.of(context).size.height;
+    double screenHeight = MediaQuery.of(context).size.height;
     final myTheme = Theme.of(context).colorScheme;
     return Container(
-      width: screenWidth * 0.7,
+      // width: screenWidth * 0.15,
       // height: screenHeight * 0.15,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
          Container(
-          width: 250,
-          height: 200,
+           // width: screenWidth * 0.15,
+           // height: screenHeight * 0.15,
     child: TextButton(
    onPressed: () {
        setState(() {
-           selectedButton = 'Apache';
+           selectedAirframe = 'Apache';
        });
    },
    child: Column(
        children: [
            Padding(
                padding: const EdgeInsets.only(right: 80, top: 30),
-               child: Icon(ArmyAircraft.apache, color: selectedButton == 'Apache' ? myTheme.error : myTheme.primary, size: 140.0),
+               child: Icon(ArmyAircraft.apache, color: selectedAirframe == 'Apache' ? myTheme.error : myTheme.primary, size: 140.0),
            ),
            SizedBox(height: 10,),
        ],
@@ -194,9 +326,9 @@ class _RadioExampleState extends State<RadioExample> {
        foregroundColor: MaterialStateProperty.resolveWith(
            (Set<MaterialState> states) {
                if (states.contains(MaterialState.pressed)) {
-                  return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+                  return selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary;
                } else {
-                  return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+                  return selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary;
                }
            }),
    ),
@@ -205,12 +337,13 @@ class _RadioExampleState extends State<RadioExample> {
   ),
 
 	SizedBox(height: 0),
-  Container(width: 250,
-          height: 200,
+  Container(
+    // width: 250,
+    // height: 200,
     child: TextButton(
      onPressed: () {
      setState(() {
-     selectedButton = 'Blackhawk';
+     selectedAirframe = 'Blackhawk';
      });
      },
      
@@ -219,10 +352,10 @@ class _RadioExampleState extends State<RadioExample> {
      children: [
      Padding(
        padding: const EdgeInsets.only(right: 50),
-       child: Icon(ArmyAircraft.blackhawk, color: selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary, size: 200  ),
+       child: Icon(ArmyAircraft.blackhawk, color: selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary, size: 200  ),
      ),
      SizedBox(height: 0,),
-    //  Text('Blackhawk', style: TextStyle(fontSize: 20, color: selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary)),
+    //  Text('Blackhawk', style: TextStyle(fontSize: 20, color: selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary)),
      ],
      ),
      style: ButtonStyle(
@@ -230,9 +363,9 @@ class _RadioExampleState extends State<RadioExample> {
      foregroundColor: MaterialStateProperty.resolveWith(
      (Set<MaterialState> states) {
      if (states.contains(MaterialState.pressed)) {
-       return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+       return selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary;
      } else {
-       return selectedButton == 'Blackhawk' ? myTheme.error : myTheme.primary;
+       return selectedAirframe == 'Blackhawk' ? myTheme.error : myTheme.primary;
      }
      }),
      ),
@@ -243,12 +376,13 @@ SizedBox(height: 0),
 
 
 
- Container(width: 250,
-          height: 200,
+ Container(
+   // width: 250,
+   // height: 200,
     child: TextButton(
      onPressed: () {
      setState(() {
-     selectedButton = 'Chinook';
+     selectedAirframe = 'Chinook';
      });
      },
      
@@ -257,9 +391,9 @@ SizedBox(height: 0),
      children: [
      Padding(
        padding: const EdgeInsets.only(right: 100, top: 20),
-       child: Icon(ArmyAircraft.chinook, color: selectedButton == 'Chinook' ? myTheme.error : myTheme.primary, size: 125),
+       child: Icon(ArmyAircraft.chinook, color: selectedAirframe == 'Chinook' ? myTheme.error : myTheme.primary, size: 125),
      ),SizedBox(height: 10,),
-    //  Text('Chinook', style: TextStyle(fontSize: 20, color: selectedButton == 'Chinook' ? myTheme.error : myTheme.primary)),
+    //  Text('Chinook', style: TextStyle(fontSize: 20, color: selectedAirframe == 'Chinook' ? myTheme.error : myTheme.primary)),
      ],
      ),
      style: ButtonStyle(
@@ -267,9 +401,9 @@ SizedBox(height: 0),
      foregroundColor: MaterialStateProperty.resolveWith(
      (Set<MaterialState> states) {
      if (states.contains(MaterialState.pressed)) {
-       return selectedButton == 'Chinook' ? myTheme.error : myTheme.primary;
+       return selectedAirframe == 'Chinook' ? myTheme.error : myTheme.primary;
      } else {
-       return selectedButton == 'Chinook' ? myTheme.error : myTheme.primary;
+       return selectedAirframe == 'Chinook' ? myTheme.error : myTheme.primary;
      }
      }),
      ),
@@ -280,197 +414,6 @@ SizedBox(height: 0),
     );
   }
 }
-final _formKey = GlobalKey<FormState>();
-class FloatInputForm extends StatefulWidget {
-  @override
-
-
-  _FloatInputFormState createState() => _FloatInputFormState();
-}
-
-class _FloatInputFormState extends State<FloatInputForm> {
-  final _firstController = TextEditingController();
-  final _secondController = TextEditingController();
-  
-
-  @override
-  Widget build(BuildContext context) {
-    
-    final myTheme = Theme.of(context).colorScheme;
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    return Form(
-      key: _formKey,
-      child: Container(
-        width: screenWidth * 0.7,
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-               width: screenWidth * 0.45, // 80% of screen width
-              height: screenHeight * 0.02, // 10% of screen height
-              
-              child: Text('Total Hours')),
-              SizedBox(height:3),
-            Container(
-              width: screenWidth * 0.45, // 80% of screen width
-              height: screenHeight * 0.05, // 10% of screen height
-              child: TextFormField(
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 14),
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: "  Hours",
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: myTheme.primary),
-                      borderRadius: BorderRadius.circular(5.0)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: myTheme.error),
-                      borderRadius: BorderRadius.circular(5.0)),
-                ),
-                keyboardType: TextInputType.number,
-                controller: _firstController,
-                validator: (value) {
-                    double? parsedValue = double.tryParse(value!);
-                    if (parsedValue == null || parsedValue > 50000) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                    },
-              ),
-            ),
-            SizedBox(height: 5),
-            Container(
-              width: screenWidth * 0.45, // 80% of screen width
-              height: screenHeight * 0.02, // 10% of screen height
-              child: Text('Total NVS')),
-              SizedBox(height:3),
-            Container(
-              width: screenWidth * 0.45,
-              height: screenHeight * 0.05,
-              child: TextFormField(
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 14),
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: "  Hours",
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: myTheme.primary),
-                      borderRadius: BorderRadius.circular(5.0)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: myTheme.error),
-                      borderRadius: BorderRadius.circular(5.0)),
-                ),
-                keyboardType: TextInputType.number,
-                controller: _secondController,
-                validator: (value) {
-                 double? parsedValue = double.tryParse(value!);
-                    if (parsedValue == null || parsedValue > 50000) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AutoDatePicker extends StatefulWidget {
-  @override
-  _AutoDatePickerState createState() => _AutoDatePickerState();
-}
-
-class _AutoDatePickerState extends State<AutoDatePicker> {
-  DateTime selectedDate = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => selectDate());
-  }
-
-  Future<void> selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(1940, 8),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Replace with your actual UI
-  }
-}
-
-class DOBFormatter extends TextInputFormatter {
-  final sampleValue = '01/01/2000';
-
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    if (newValue.text.length > oldValue.text.length) {
-      // If the new value length exceeds the sample value length
-      // return the old value;
-      if (newValue.text.length > sampleValue.length) {
-        return oldValue;
-      }
-
-      // Check if the recently entered character is a digit or not.
-      final lastEnteredLetter = newValue.text[newValue.text.length - 1];
-      if (!RegExp(r'[0-9]').hasMatch(lastEnteredLetter)) {
-        return oldValue;
-      }
-
-      // If the next index place is a separator, then modify the
-      // text editing value.
-      if (sampleValue.length != newValue.text.length &&
-          sampleValue[newValue.text.length] == '/') {
-        final lastTwoDigits = newValue.text.substring(newValue.text.length - 2);
-        String? modifiedString;
-
-        if (newValue.text.length == 2) {
-          int value = int.parse(lastTwoDigits);
-          if (value > 31) {
-            value = value ~/ 10;
-            modifiedString = '0$value';
-          }
-        }
-
-        if (newValue.text.length == 5) {
-          int value = int.parse(lastTwoDigits);
-          if (value > 12) {
-            value = value ~/ 10;
-            modifiedString =
-                '${newValue.text.substring(0, newValue.text.length - 2)}0$value';
-          }
-        }
-
-        return TextEditingValue(
-          text: '${modifiedString ?? newValue.text}/',
-          selection:
-              TextSelection.collapsed(offset: newValue.selection.end + 1),
-        );
-      }
-    }
-
-    return newValue;
-  }
-}
-
 
 
 String? selectedMonth;
@@ -506,7 +449,7 @@ class _MonthButtonState extends State<MonthButton> {
     // double screenHeight = MediaQuery.of(context).size.height;
     final myTheme = Theme.of(context).colorScheme;
     return Container(
-       width: screenWidth * 0.45,
+       width: screenWidth * 0.85,
       // width: 300,
       child: Column(
         children: List.generate(4, (rowIndex) {
@@ -526,7 +469,8 @@ class _MonthButtonState extends State<MonthButton> {
                       });
                     },
                     child: Text(months[monthIndex],
-                        style: TextStyle(fontSize: 13)),
+                        style: TextStyle(fontSize: 13, color: Colors.white)),
+                        
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius:
@@ -535,6 +479,10 @@ class _MonthButtonState extends State<MonthButton> {
                       foregroundColor: selectedMonth == months[monthIndex]
                           ? myTheme.error
                           : myTheme.primary,
+                      backgroundColor: selectedMonth == months[monthIndex]
+                      ? myTheme.error
+                      : myTheme.primary,
+
                       side: BorderSide(
                         color: selectedMonth == months[monthIndex]
                             ? myTheme.error
@@ -554,3 +502,189 @@ class _MonthButtonState extends State<MonthButton> {
 }
 
 
+
+
+// final _formKey = GlobalKey<FormState>();
+
+
+// class semiannualInput extends StatefulWidget {
+//   const semiannualInput({Key? key}) : super(key: key);
+
+//   @override
+//   State<semiannualInput> createState() => _semiannualInputState();
+// }
+
+// class _semiannualInputState extends State<semiannualInput> {
+//   @override
+//   Widget build(BuildContext context) {
+//       double screenWidth = MediaQuery.of(context).size.width;
+//     double screenHeight = MediaQuery.of(context).size.height;
+//     final myTheme = Theme.of(context).colorScheme;
+//     return Form(
+//       key: _formKey,
+//       child: Container(
+//         width: screenWidth * 0.7,
+//         child: Column(
+//           // mainAxisAlignment: MainAxisAlignment.start,
+//           children: <Widget>[
+//             Container(
+//                width: screenWidth * 0.85, // 80% of screen width
+//               height: screenHeight * 0.02, // 10% of screen height
+              
+//               child: Text('Total Hours')),
+//               SizedBox(height:3),
+//             Container(
+//               width: screenWidth * 0.85, // 80% of screen width
+//               height: screenHeight * 0.05, // 10% of screen height
+//               child: TextFormField(
+//                 textAlign: TextAlign.left,
+//                 style: TextStyle(fontSize: 14),
+//                 decoration: InputDecoration(
+//                   isDense: true,
+//                   hintText: " Hours",
+//                   contentPadding:
+//                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
+//                   enabledBorder: OutlineInputBorder(
+//                       borderSide: BorderSide(color: myTheme.primary),
+//                       borderRadius: BorderRadius.circular(5.0)),
+//                   focusedBorder: OutlineInputBorder(
+//                       borderSide: BorderSide(color: myTheme.error),
+//                       borderRadius: BorderRadius.circular(5.0)),
+//                 ),
+//                 keyboardType: TextInputType.number,
+//                 controller: _firstController,
+//                 validator: (value) {
+//                     double? parsedValue = double.tryParse(value!);
+//                     if (parsedValue == null || parsedValue > 50000) {
+//                       return 'Please enter a valid number';
+//                     }
+//                     return null;
+//                     },
+                
+                  
+//               ),
+//             ),
+//             SizedBox(height: 5),
+//             Container(
+//               width: screenWidth * 0.85, // 80% of screen width
+//               height: screenHeight * 0.02, // 10% of screen height
+//               child: Text('Total NVS')),
+//               SizedBox(height:3),
+//             Container(
+//               width: screenWidth * 0.85,
+//               height: screenHeight * 0.05,
+//               child: TextFormField(
+//                 textAlign: TextAlign.left,
+//                 style: TextStyle(fontSize: 14),
+//                 decoration: InputDecoration(
+//                   isDense: true,
+//                   hintText: " Hours",
+//                   contentPadding:
+//                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
+//                   enabledBorder: OutlineInputBorder(
+//                       borderSide: BorderSide(color: myTheme.primary),
+//                       borderRadius: BorderRadius.circular(5.0)),
+//                   focusedBorder: OutlineInputBorder(
+//                       borderSide: BorderSide(color: myTheme.error),
+//                       borderRadius: BorderRadius.circular(5.0)),
+//                 ),
+//                 keyboardType: TextInputType.number,
+//                 controller: _secondController,
+//                 validator: (value) {
+//                  double? parsedValue = double.tryParse(value!);
+//                     if (parsedValue == null || parsedValue > 50000) {
+//                       return 'Please enter a valid number';
+//                     }
+//                     return null;
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+// String? validateNumber(String? value) {
+// double? parsedValue = double.tryParse(value!);
+ 
+//  if (parsedValue == null || parsedValue > 50000) {
+//    return 'Please enter a valid number';
+//  }
+//  return null;
+// }
+
+final _totalHours = TextEditingController(); 
+final _totalNVD = TextEditingController();
+final _formsemiHours = TextEditingController();
+final _totalsemiHours = TextEditingController();
+final _backSemi = TextEditingController();
+final _frontSemi = TextEditingController();
+final _nvsSemi = TextEditingController();
+final _nvgSemi = TextEditingController();
+final _nunaidedSemi = TextEditingController();
+final _hwSemi= TextEditingController();
+final _simtotalSemi = TextEditingController();
+final _bssimSemi = TextEditingController();
+final _fssimSemi = TextEditingController();
+final _gcoftSemi = TextEditingController();
+final _totalKey = GlobalKey<FormState>();
+final _semiKey = GlobalKey<FormState>();
+
+class userinputHours extends StatelessWidget {
+ final String label;
+ final TextEditingController controller;
+ //final FormFieldValidator<String> validator;
+
+ userinputHours({
+   required this.label,
+   required this.controller,
+   //required this.validator,
+ });
+
+ @override
+ Widget build(BuildContext context) {
+  final myTheme = Theme.of(context).colorScheme;
+  double screenWidth = MediaQuery.of(context).size.width;
+  double screenHeight = MediaQuery.of(context).size.height;
+   return Column(
+     crossAxisAlignment: CrossAxisAlignment.start,
+     children: [
+       Text(label),
+       SizedBox(height: 3),
+       Container(
+         width: screenWidth * 0.85, // 80% of screen width
+         height: screenHeight * 0.05, // 10% of screen height
+         child: TextFormField(
+           textAlign: TextAlign.left,
+           style: TextStyle(fontSize: 14),
+           decoration: InputDecoration(
+             isDense: true,
+             hintText: " Hours",
+             contentPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
+             enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: myTheme.primary),
+                borderRadius: BorderRadius.circular(5.0)),
+             focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: myTheme.error),
+                borderRadius: BorderRadius.circular(5.0)),
+           ),
+           keyboardType: TextInputType.number,
+           controller: controller,
+           validator: (value) {
+                    double? parsedValue = double.tryParse(value!);
+                    if (parsedValue == null || parsedValue > 50000) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                    },
+         ),
+       ),
+       SizedBox(height: 5),
+     ],
+   );
+ }
+}
