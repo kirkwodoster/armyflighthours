@@ -70,8 +70,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-            buildHeader(context),
-            buildMenuItems(context),
+                buildHeader(context),
+                buildMenuItems(context),
           ])));
 
   Widget buildHeader(BuildContext context) => Material(

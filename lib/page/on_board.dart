@@ -1,6 +1,12 @@
 
 import 'package:firebase_auth_verify_email/army_aircraft_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
+
+
 // import 'package:flutter/services.dart';
 
 
@@ -36,18 +42,18 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
         resizeToAvoidBottomInset: true, // Set this to true
         body: SingleChildScrollView(
         child: Container(
-          height: screenHeight*.99,
+          height: screenHeight*.95,
         padding: const EdgeInsets.only(bottom: 80),
-    child: PageView(
-    allowImplicitScrolling: true,
-    physics: NeverScrollableScrollPhysics(), // Add this line
-    controller: controller,
-    onPageChanged: (index) {
-    setState(() {
-    isLastPage = index == 2;
-    isFirstPage = index == 0;
-    });
-    },
+          child: PageView(
+            allowImplicitScrolling: true,
+            physics: NeverScrollableScrollPhysics(), // Add this line
+            controller: controller,
+            onPageChanged: (index) {
+            setState(() {
+            isLastPage = index == 2;
+            isFirstPage = index == 0;
+            });
+            },
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -80,12 +86,20 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                      ],
                    ),
                  ),
-
-
-                  Text('Select Month of Birth'),
+                  SizedBox(height: 20),
+                  Container(
+                      width: screenWidth * 0.85,
+                      child: Text('Select Month of Birth',  textAlign: TextAlign.left)),
                   SizedBox(height: 20),
                   MonthButton(),
-                  SizedBox(height: 20),],
+                  SizedBox(height: 20),
+                  Container(
+                      width: screenWidth * 0.85,
+                      child: Text('Select FAC Level',  textAlign: TextAlign.left)),
+                  SizedBox(height: 20),
+                  facAviator(),
+                  SizedBox(height: 20),
+                ],
 
               ),
               // Stack(alignment: Alignment.center, children: [DateInput()])
@@ -93,41 +107,41 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                 children: [
 
 
-             Form(key: _semiKey,
-             child: Column(children: [
-                        userinputHours(
-                        label: 'Current Semi Annual Total hours',
-                        controller: _totalsemiHours),
-                        userinputHours(
-                        label: 'Current Semi Annual Backseat hours',
-                        controller: _backSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual Frontseat hours',
-                        controller: _frontSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual NVS hours',
-                        controller: _nvsSemi),
-                            userinputHours(
-                        label: 'Current Semi Annual NVG Hours',
-                        controller: _nvgSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual Unaided hours',
-                        controller: _nunaidedSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual Hood/Weather hours',
-                        controller: _hwSemi),
-                         userinputHours(
-                        label: 'Current Semi Annual Total SIM Hours',
-                        controller: _simtotalSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual SIM Backset hours',
-                        controller: _bssimSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual SIM Frontseat hours',
-                        controller: _fssimSemi),
-                        userinputHours(
-                        label: 'Current Semi Annual G-COFT/E hours',
-                        controller: _fssimSemi),
+               Form(key: _semiKey,
+                child: Column(children: [
+                  userinputHours(
+                  label: 'Current Semi Annual hours',
+                  controller: _totalsemiHours),
+                  userinputHours(
+                  label: 'Current Semi Annual Backseat hours',
+                  controller: _backSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual Frontseat hours',
+                  controller: _frontSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual NVS hours',
+                  controller: _nvsSemi),
+                      userinputHours(
+                  label: 'Current Semi Annual NVG Hours',
+                  controller: _nvgSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual Unaided hours',
+                  controller: _nunaidedSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual Hood/Weather hours',
+                  controller: _hwSemi),
+                   userinputHours(
+                  label: 'Current Semi Annual Total SIM Hours',
+                  controller: _simtotalSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual SIM Backset hours',
+                  controller: _bssimSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual SIM Frontseat hours',
+                  controller: _fssimSemi),
+                  userinputHours(
+                  label: 'Current Semi Annual G-COFT/E hours',
+                  controller: _fssimSemi),
 
 
              ],))
@@ -157,9 +171,13 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                     TextButton(
                       child: const Text('Submit'),
                       onPressed: () {
-                        print(_RadioExampleState()._character.toString());
-                        ;
+                        initialOnboardData();
                       },
+
+                      // async {
+                      //   await _usersCollection.doc(uid).update(onboardData).then((value) => print("Data Added"))
+                      //       .catchError((error) => print("Failed to add data: $error"));
+                      // },
                     ),
                   ],
                 ),
@@ -234,13 +252,13 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                         TextButton(
                         child: const Text('Next'),
                         onPressed: () {
-                          if (_totalKey.currentState!.validate() && selectedMonth != null) {
+                          if (_totalKey.currentState!.validate() && selectedMonth != null && selectedFac != null) {
                             controller.nextPage(
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
                             );
 
-                          }else if(selectedMonth == null){
+                          }else if(selectedMonth == null || selectedFac == null){
                             final selectAirframe = SnackBar(
                               content: Center(
                                 child: Container(
@@ -255,7 +273,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                        borderRadius: BorderRadius.all(Radius.circular(20))
 
                                       ),
-                                  child: Center(child: Text('Select a Birth Month', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold,)),
+                                  child: Center(child: Text('Select a Birth Month and FAC Level', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold,)),
 
                                   ),
                                 ),
@@ -269,6 +287,8 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
 
                             );
                             ScaffoldMessenger.of(context).showSnackBar(selectAirframe);
+
+
                           }
                         },
                         ),
@@ -282,6 +302,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
 
 
 enum SingingCharacter { Apache, Blackhawk, Chinook }
+
 String? selectedAirframe;
 class RadioExample extends StatefulWidget {
   @override
@@ -416,7 +437,12 @@ SizedBox(height: 0),
 }
 
 
+
+
+
+
 String? selectedMonth;
+// int? selectedMontint;
 class MonthButton extends StatefulWidget {
   const MonthButton({Key? key}) : super(key: key);
 
@@ -425,6 +451,13 @@ class MonthButton extends StatefulWidget {
 }
 
 class _MonthButtonState extends State<MonthButton> {
+
+
+  // int monthNameToInt(String monthName) {
+  //   final dateTime = DateFormat('MMM').parse(monthName);
+  //   return dateTime.month;
+  // }
+
   // String? selectedMonth;
 
   List<String> months = [
@@ -444,7 +477,7 @@ class _MonthButtonState extends State<MonthButton> {
 
   @override
   Widget build(BuildContext context) {
-    
+
      double screenWidth = MediaQuery.of(context).size.width;
     // double screenHeight = MediaQuery.of(context).size.height;
     final myTheme = Theme.of(context).colorScheme;
@@ -466,11 +499,12 @@ class _MonthButtonState extends State<MonthButton> {
                     onPressed: () {
                       setState(() {
                         selectedMonth = months[monthIndex];
+                        // int selectedMonthNumber = monthNameToInt(selectedMonth!);
                       });
                     },
                     child: Text(months[monthIndex],
                         style: TextStyle(fontSize: 13, color: Colors.white)),
-                        
+
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius:
@@ -496,125 +530,12 @@ class _MonthButtonState extends State<MonthButton> {
           );
         }),
       ),
-      
+
     );
   }
 }
 
 
-
-
-// final _formKey = GlobalKey<FormState>();
-
-
-// class semiannualInput extends StatefulWidget {
-//   const semiannualInput({Key? key}) : super(key: key);
-
-//   @override
-//   State<semiannualInput> createState() => _semiannualInputState();
-// }
-
-// class _semiannualInputState extends State<semiannualInput> {
-//   @override
-//   Widget build(BuildContext context) {
-//       double screenWidth = MediaQuery.of(context).size.width;
-//     double screenHeight = MediaQuery.of(context).size.height;
-//     final myTheme = Theme.of(context).colorScheme;
-//     return Form(
-//       key: _formKey,
-//       child: Container(
-//         width: screenWidth * 0.7,
-//         child: Column(
-//           // mainAxisAlignment: MainAxisAlignment.start,
-//           children: <Widget>[
-//             Container(
-//                width: screenWidth * 0.85, // 80% of screen width
-//               height: screenHeight * 0.02, // 10% of screen height
-              
-//               child: Text('Total Hours')),
-//               SizedBox(height:3),
-//             Container(
-//               width: screenWidth * 0.85, // 80% of screen width
-//               height: screenHeight * 0.05, // 10% of screen height
-//               child: TextFormField(
-//                 textAlign: TextAlign.left,
-//                 style: TextStyle(fontSize: 14),
-//                 decoration: InputDecoration(
-//                   isDense: true,
-//                   hintText: " Hours",
-//                   contentPadding:
-//                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
-//                   enabledBorder: OutlineInputBorder(
-//                       borderSide: BorderSide(color: myTheme.primary),
-//                       borderRadius: BorderRadius.circular(5.0)),
-//                   focusedBorder: OutlineInputBorder(
-//                       borderSide: BorderSide(color: myTheme.error),
-//                       borderRadius: BorderRadius.circular(5.0)),
-//                 ),
-//                 keyboardType: TextInputType.number,
-//                 controller: _firstController,
-//                 validator: (value) {
-//                     double? parsedValue = double.tryParse(value!);
-//                     if (parsedValue == null || parsedValue > 50000) {
-//                       return 'Please enter a valid number';
-//                     }
-//                     return null;
-//                     },
-                
-                  
-//               ),
-//             ),
-//             SizedBox(height: 5),
-//             Container(
-//               width: screenWidth * 0.85, // 80% of screen width
-//               height: screenHeight * 0.02, // 10% of screen height
-//               child: Text('Total NVS')),
-//               SizedBox(height:3),
-//             Container(
-//               width: screenWidth * 0.85,
-//               height: screenHeight * 0.05,
-//               child: TextFormField(
-//                 textAlign: TextAlign.left,
-//                 style: TextStyle(fontSize: 14),
-//                 decoration: InputDecoration(
-//                   isDense: true,
-//                   hintText: " Hours",
-//                   contentPadding:
-//                       const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
-//                   enabledBorder: OutlineInputBorder(
-//                       borderSide: BorderSide(color: myTheme.primary),
-//                       borderRadius: BorderRadius.circular(5.0)),
-//                   focusedBorder: OutlineInputBorder(
-//                       borderSide: BorderSide(color: myTheme.error),
-//                       borderRadius: BorderRadius.circular(5.0)),
-//                 ),
-//                 keyboardType: TextInputType.number,
-//                 controller: _secondController,
-//                 validator: (value) {
-//                  double? parsedValue = double.tryParse(value!);
-//                     if (parsedValue == null || parsedValue > 50000) {
-//                       return 'Please enter a valid number';
-//                     }
-//                     return null;
-//                 },
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-// String? validateNumber(String? value) {
-// double? parsedValue = double.tryParse(value!);
- 
-//  if (parsedValue == null || parsedValue > 50000) {
-//    return 'Please enter a valid number';
-//  }
-//  return null;
-// }
 
 final _totalHours = TextEditingController(); 
 final _totalNVD = TextEditingController();
@@ -677,14 +598,118 @@ class userinputHours extends StatelessWidget {
            validator: (value) {
                     double? parsedValue = double.tryParse(value!);
                     if (parsedValue == null || parsedValue > 50000) {
+
                       return 'Please enter a valid number';
                     }
                     return null;
+
                     },
+
          ),
+
        ),
        SizedBox(height: 5),
      ],
    );
  }
 }
+
+
+String? selectedFac;
+class facAviator extends StatefulWidget {
+  const facAviator({Key? key}) : super(key: key);
+
+  @override
+  _facAviatorState createState() => _facAviatorState();
+}
+
+class _facAviatorState extends State<facAviator> {
+  // String? selectedMonth;
+
+  List<String> fac = [
+    'FAC 1',
+    'FAC 2',
+    'FAC 3',
+
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    // double screenHeight = MediaQuery.of(context).size.height;
+    final myTheme = Theme.of(context).colorScheme;
+    return Container(
+      width: screenWidth * 0.85,
+      // width: 300,
+      child: Column(
+        children: List.generate(1, (rowIndex) {
+          return Row(
+            children: List.generate(3, (columnIndex) {
+              int facAvi = rowIndex * 3 + columnIndex;
+              if (facAvi >= fac.length) {
+                return Expanded(child: Container());
+              }
+              return Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedFac = fac[facAvi];
+                      });
+                    },
+                    child: Text(fac[facAvi],
+                        style: TextStyle(fontSize: 13, color: Colors.white)),
+
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(5.0), // Make it rectangle
+                      ),
+                      foregroundColor: selectedFac == fac[facAvi]
+                          ? myTheme.error
+                          : myTheme.primary,
+                      backgroundColor: selectedFac == fac[facAvi]
+                          ? myTheme.error
+                          : myTheme.primary,
+
+                      side: BorderSide(
+                        color: selectedFac == fac[facAvi]
+                            ? myTheme.error
+                            : myTheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        }),
+      ),
+
+    );
+  }
+}
+
+
+Future initialOnboardData() async {
+  final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('users');
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final User? user = auth.currentUser;
+  final uid = user?.uid;
+
+  final onboardData = {
+    "Airframe": selectedAirframe,
+    "Birth Month": selectedMonth,
+    "FAC Level": selectedFac,
+  };
+
+  await _usersCollection.doc(uid).update(onboardData).then((value) => print("Data Added"))
+      .catchError((error) => print("Failed to add data: $error"));
+
+}
+
+
+
+
