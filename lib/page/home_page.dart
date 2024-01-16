@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_verify_email/main.dart';
 import 'package:firebase_auth_verify_email/page/on_board.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth_verify_email/widget/login_widget.dart';
+
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -42,8 +46,19 @@ class _HomePageState extends State<HomePage> {
                 'Sign Out',
                 style: TextStyle(fontSize: 24),
               ),
-              onPressed: () {},
-            ),
+              onPressed: () async {
+                await GoogleSignIn().signOut();
+                await FirebaseAuth.instance.signOut();
+                // initialOnboardData();
+                // totalHours();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainPage()),
+                      (Route<dynamic> route) => false,
+                );
+
+
+              },),
             CheckUserMonth()
           ],
         ),
@@ -183,7 +198,7 @@ class _CheckUserMonthState extends State<CheckUserMonth> {
 
           Map<String, dynamic>? data =
               snapshot.data!.data() as Map<String, dynamic>?;
-          if (data?.containsKey('month') != true) {
+          if (data?.containsKey('Birth Month') != true) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => OnBoardingScreen()));
