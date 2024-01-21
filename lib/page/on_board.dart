@@ -1,9 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_verify_email/army_aircraft_icons.dart';
 import 'package:firebase_auth_verify_email/page/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_verify_email/widget/login_widget.dart';
 // import 'package:flutter/services.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -82,14 +81,25 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                           child: Text('Select Month of Birth',
                               textAlign: TextAlign.left)),
                       SizedBox(height: 20),
-                      MonthButton(),
+                      // MonthButton(),
+                      Column(
+                        //crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          monthDropDown(),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          facDropDown(),
+                        ],
+                      ),
                       SizedBox(height: 20),
-                      Container(
-                          width: screenWidth * 0.85,
-                          child: Text('Select FAC Level',
-                              textAlign: TextAlign.left)),
-                      SizedBox(height: 20),
-                      facAviator(),
+                      // Container(
+                      //     width: screenWidth * 0.85,
+                      //     child: Text('Select FAC Level',
+                      //         textAlign: TextAlign.left)),
+                      // SizedBox(height: 20),
+                      // facAviator(),
                       SizedBox(height: 20),
                     ],
                   ),
@@ -172,7 +182,6 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                             context,
                             MaterialPageRoute(builder: (context) => HomePage()),
                           );
-
                         },
                       ),
                     ],
@@ -462,86 +471,239 @@ class _RadioExampleState extends State<RadioExample> {
   }
 }
 
+List<String> months = [
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC'
+];
+
 String? selectedMonth;
 
-class MonthButton extends StatefulWidget {
-  const MonthButton({Key? key}) : super(key: key);
+class monthDropDown extends StatefulWidget {
+  const monthDropDown({Key? key}) : super(key: key);
 
   @override
-  _MonthButtonState createState() => _MonthButtonState();
+  State<monthDropDown> createState() => _monthDropDownState();
 }
 
-class _MonthButtonState extends State<MonthButton> {
-  List<String> months = [
-    'JAN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AUG',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DEC'
-  ];
-
+class _monthDropDownState extends State<monthDropDown> {
+  String selectedMonth = months.first;
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    // double screenHeight = MediaQuery.of(context).size.height;
     final myTheme = Theme.of(context).colorScheme;
-    return Container(
-      width: screenWidth * 0.85,
-      // width: 300,
-      child: Column(
-        children: List.generate(4, (rowIndex) {
-          return Row(
-            children: List.generate(3, (columnIndex) {
-              int monthIndex = rowIndex * 3 + columnIndex;
-              if (monthIndex >= months.length) {
-                return Expanded(child: Container());
-              }
-              return Expanded(
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedMonth = months[monthIndex];
-                        // int selectedMonthNumber = monthNameToInt(selectedMonth!);
-                      });
-                    },
-                    child: Text(months[monthIndex],
-                        style: TextStyle(fontSize: 13, color: Colors.white)),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(5.0), // Make it rectangle
-                      ),
-                      foregroundColor: selectedMonth == months[monthIndex]
-                          ? myTheme.error
-                          : myTheme.primary,
-                      backgroundColor: selectedMonth == months[monthIndex]
-                          ? myTheme.error
-                          : myTheme.primary,
-                      side: BorderSide(
-                        color: selectedMonth == months[monthIndex]
-                            ? myTheme.error
-                            : myTheme.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          );
-        }),
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            // width: screenWidth * 0.85,
+            decoration: BoxDecoration(
+              // color: myTheme.primary, borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: myTheme.primary,
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: DropdownButton<String>(
+                underline: Container(color: Colors.transparent),
+                value: selectedMonth,
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() => selectedMonth = value!);
+                  print(selectedMonth.toString());
+                },
+                selectedItemBuilder: (BuildContext context) {
+                  return months.map<Widget>((String item) {
+                    // This is the widget that will be shown when you select an item.
+                    // Here custom text style, alignment and layout size can be applied
+                    // to selected item string.
+                    return Container(
+                        alignment: Alignment.center,
+                        constraints: const BoxConstraints(minWidth: 100),
+                        child: Text(
+                          item,
+                        ));
+                  }).toList();
+                },
+                items: months.map<DropdownMenuItem<String>>((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+List<String> fac = [
+  'FAC 1',
+  'FAC 2',
+  'FAC 3',
+];
+// const facDropDown({Key? key}) : super(key: key);
+String? selectedFac;
+
+class facDropDown extends StatefulWidget {
+  const facDropDown({Key? key}) : super(key: key);
+
+  @override
+  State<facDropDown> createState() => _facDropDownState();
+}
+
+class _facDropDownState extends State<facDropDown> {
+  String selectedFac = fac.first;
+  @override
+  Widget build(BuildContext context) {
+    final myTheme = Theme.of(context).colorScheme;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            // width: screenWidth * 0.85,
+            decoration: BoxDecoration(
+              // color: myTheme.primary, borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: myTheme.primary,
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: DropdownButton<String>(
+                underline: Container(color: Colors.transparent),
+                value: selectedFac,
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() => selectedFac = value!);
+                },
+                selectedItemBuilder: (BuildContext context) {
+                  return fac.map<Widget>((String item) {
+                    // This is the widget that will be shown when you select an item.
+                    // Here custom text style, alignment and layout size can be applied
+                    // to selected item string.
+                    return Container(
+                        alignment: Alignment.center,
+                        constraints: const BoxConstraints(minWidth: 100),
+                        child: Text(
+                          item,
+                        ));
+                  }).toList();
+                },
+                items: fac.map<DropdownMenuItem<String>>((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// String? selectedMonth;
+// class MonthButton extends StatefulWidget {
+//   const MonthButton({Key? key}) : super(key: key);
+//
+//   @override
+//   _MonthButtonState createState() => _MonthButtonState();
+// }
+//
+// class _MonthButtonState extends State<MonthButton> {
+//   List<String> months = [
+//     'JAN',
+//     'FEB',
+//     'MAR',
+//     'APR',
+//     'MAY',
+//     'JUN',
+//     'JUL',
+//     'AUG',
+//     'SEP',
+//     'OCT',
+//     'NOV',
+//     'DEC'
+//   ];
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     double screenWidth = MediaQuery.of(context).size.width;
+//     // double screenHeight = MediaQuery.of(context).size.height;
+//     final myTheme = Theme.of(context).colorScheme;
+//     return Container(
+//       width: screenWidth * 0.85,
+//       // width: 300,
+//       child: Column(
+//         children: List.generate(4, (rowIndex) {
+//           return Row(
+//             children: List.generate(3, (columnIndex) {
+//               int monthIndex = rowIndex * 3 + columnIndex;
+//               if (monthIndex >= months.length) {
+//                 return Expanded(child: Container());
+//               }
+//               return Expanded(
+//                 child: Container(
+//                   padding: EdgeInsets.all(10),
+//                   child: OutlinedButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         selectedMonth = months[monthIndex];
+//                         // int selectedMonthNumber = monthNameToInt(selectedMonth!);
+//                       });
+//                     },
+//                     child: Text(months[monthIndex],
+//                         style: TextStyle(fontSize: 13, color: Colors.white)),
+//                     style: OutlinedButton.styleFrom(
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius:
+//                             BorderRadius.circular(5.0), // Make it rectangle
+//                       ),
+//                       foregroundColor: selectedMonth == months[monthIndex]
+//                           ? myTheme.error
+//                           : myTheme.primary,
+//                       backgroundColor: selectedMonth == months[monthIndex]
+//                           ? myTheme.error
+//                           : myTheme.primary,
+//                       side: BorderSide(
+//                         color: selectedMonth == months[monthIndex]
+//                             ? myTheme.error
+//                             : myTheme.primary,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             }),
+//           );
+//         }),
+//       ),
+//     );
+//   }
+// }
 
 final _totalHours = TextEditingController();
 final _totalNVD = TextEditingController();
@@ -583,10 +745,11 @@ class userinputHours extends StatelessWidget {
         SizedBox(height: 3),
         Container(
           width: screenWidth * 0.85, // 80% of screen width
-          height: screenHeight * 0.05, // 10% of screen height
+          // height: screenHeight * 0.05, // 10% of screen height
+          // height: 60,
           child: TextFormField(
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 22),
             decoration: InputDecoration(
               isDense: true,
               hintText: " Hours",
@@ -616,76 +779,76 @@ class userinputHours extends StatelessWidget {
   }
 }
 
-String? selectedFac;
-
-class facAviator extends StatefulWidget {
-  const facAviator({Key? key}) : super(key: key);
-
-  @override
-  _facAviatorState createState() => _facAviatorState();
-}
-
-class _facAviatorState extends State<facAviator> {
-  List<String> fac = [
-    'FAC 1',
-    'FAC 2',
-    'FAC 3',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    // double screenHeight = MediaQuery.of(context).size.height;
-    final myTheme = Theme.of(context).colorScheme;
-    return Container(
-      width: screenWidth * 0.85,
-      // width: 300,
-      child: Column(
-        children: List.generate(1, (rowIndex) {
-          return Row(
-            children: List.generate(3, (columnIndex) {
-              int facAvi = rowIndex * 3 + columnIndex;
-              if (facAvi >= fac.length) {
-                return Expanded(child: Container());
-              }
-              return Expanded(
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedFac = fac[facAvi];
-                      });
-                    },
-                    child: Text(fac[facAvi],
-                        style: TextStyle(fontSize: 13, color: Colors.white)),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(5.0), // Make it rectangle
-                      ),
-                      foregroundColor: selectedFac == fac[facAvi]
-                          ? myTheme.error
-                          : myTheme.primary,
-                      backgroundColor: selectedFac == fac[facAvi]
-                          ? myTheme.error
-                          : myTheme.primary,
-                      side: BorderSide(
-                        color: selectedFac == fac[facAvi]
-                            ? myTheme.error
-                            : myTheme.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          );
-        }),
-      ),
-    );
-  }
-}
+// String? selectedFac;
+//
+// class facAviator extends StatefulWidget {
+//   const facAviator({Key? key}) : super(key: key);
+//
+//   @override
+//   _facAviatorState createState() => _facAviatorState();
+// }
+//
+// class _facAviatorState extends State<facAviator> {
+//   List<String> fac = [
+//     'FAC 1',
+//     'FAC 2',
+//     'FAC 3',
+//   ];
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     double screenWidth = MediaQuery.of(context).size.width;
+//     // double screenHeight = MediaQuery.of(context).size.height;
+//     final myTheme = Theme.of(context).colorScheme;
+//     return Container(
+//       width: screenWidth * 0.85,
+//       // width: 300,
+//       child: Column(
+//         children: List.generate(1, (rowIndex) {
+//           return Row(
+//             children: List.generate(3, (columnIndex) {
+//               int facAvi = rowIndex * 3 + columnIndex;
+//               if (facAvi >= fac.length) {
+//                 return Expanded(child: Container());
+//               }
+//               return Expanded(
+//                 child: Container(
+//                   padding: EdgeInsets.all(10),
+//                   child: OutlinedButton(
+//                     onPressed: () {
+//                       setState(() {
+//                         selectedFac = fac[facAvi];
+//                       });
+//                     },
+//                     child: Text(fac[facAvi],
+//                         style: TextStyle(fontSize: 13, color: Colors.white)),
+//                     style: OutlinedButton.styleFrom(
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius:
+//                             BorderRadius.circular(5.0), // Make it rectangle
+//                       ),
+//                       foregroundColor: selectedFac == fac[facAvi]
+//                           ? myTheme.error
+//                           : myTheme.primary,
+//                       backgroundColor: selectedFac == fac[facAvi]
+//                           ? myTheme.error
+//                           : myTheme.primary,
+//                       side: BorderSide(
+//                         color: selectedFac == fac[facAvi]
+//                             ? myTheme.error
+//                             : myTheme.primary,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             }),
+//           );
+//         }),
+//       ),
+//     );
+//   }
+// }
 
 Future initialOnboardData() async {
   final CollectionReference _usersCollection =

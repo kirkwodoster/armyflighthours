@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../page/on_board.dart';
 
 
@@ -81,41 +80,6 @@ class _LoginWidgetState extends State<LoginWidget> {
             onPressed: signIn,
           ),
           SizedBox(height: 10,),
-          Container(
-            width: screenWidth,
-            height: 50,
-            child: SignInButton(
-              Buttons.google,
-              onPressed:
-              (){}
-              //
-              //     () {
-              //   final provider =
-              //   Provider.of<GoogleSignInProvider>(context, listen: false);
-              //   provider.googleLogin();
-              // },
-            ),
-            ),
-
-          // ElevatedButton(
-          //
-          //   onPressed: () async {
-          //     UserCredential authResult = (await _verifyUser(context)) as UserCredential;
-          //     if (authResult.additionalUserInfo?.isNewUser ?? false) {
-          //       Navigator.push(context,
-          //           MaterialPageRoute(builder: (context) => OnBoardingScreen()));
-          //     } else {
-          //       final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
-          //       provider.googleLogin();
-          //     }
-          //   },
-          //   child: Text('Sign In with Googles'),
-         // ),
-
-
-
-          // SignInPage(),
-
           GoogleSignInScreen(),
           SizedBox(height: 24),
           GestureDetector(
