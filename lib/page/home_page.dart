@@ -4,7 +4,6 @@ import 'package:firebase_auth_verify_email/main.dart';
 import 'package:firebase_auth_verify_email/page/on_board.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth_verify_email/widget/login_widget.dart';
-
 import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
 
               },),
-            CheckUserMonth()
+            // CheckUserMonth()
           ],
         ),
       ),
@@ -175,40 +174,72 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       );
 }
 
-class CheckUserMonth extends StatefulWidget {
-  @override
-  _CheckUserMonthState createState() => _CheckUserMonthState();
-}
 
-class _CheckUserMonthState extends State<CheckUserMonth> {
-  String? selectedMonth;
-  final User user = FirebaseAuth.instance.currentUser!;
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future:
-          FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
 
-          Map<String, dynamic>? data =
-              snapshot.data!.data() as Map<String, dynamic>?;
-          if (data?.containsKey('Birth Month') != true) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OnBoardingScreen()));
-            });
-            return SizedBox.shrink(); // return an empty widget
-          }
-        }
+//
+// Future<User?> _signIn() async {
+//   final googleSignIn = GoogleSignIn();
+//   try {
+//     GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+//     GoogleSignInAuthentication gSA = await googleSignInAccount!.authentication;
+//     final AuthCredential credential = GoogleAuthProvider.credential(
+//       accessToken: gSA.accessToken,
+//       idToken: gSA.idToken,
+//     );
+//     UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+//     if (authResult.additionalUserInfo?.isNewUser ?? false) {
+//       // User logging in for the first time
+//       // Redirect user to tutorial
+//     } else {
+//       // User has already logged in before.
+//       // Show user profile
+//     }
+//   } catch (e) {
+//     print(e.toString());
+//   }
+// }
 
-        return SizedBox.shrink();
-      },
-    );
-  }
-}
+
+
+
+
+
+
+// class CheckUserMonth extends StatefulWidget {
+//   @override
+//   _CheckUserMonthState createState() => _CheckUserMonthState();
+// }
+//
+// class _CheckUserMonthState extends State<CheckUserMonth> {
+//   String? selectedMonth;
+//   final User user = FirebaseAuth.instance.currentUser!;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder<DocumentSnapshot>(
+//       future:
+//           FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+//       builder:
+//           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+//         if (snapshot.connectionState == ConnectionState.done) {
+//           if (snapshot.hasError) {
+//             return Text('Error: ${snapshot.error}');
+//           }
+//
+//           Map<String, dynamic>? data =
+//               snapshot.data!.data() as Map<String, dynamic>?;
+//           if (data?.containsKey('Birth Month') != true) {
+//             WidgetsBinding.instance.addPostFrameCallback((_) {
+//               Navigator.push(context,
+//                   MaterialPageRoute(builder: (context) => OnBoardingScreen()));
+//             });
+//             return SizedBox.shrink(); // return an empty widget
+//           }
+//         }
+//
+//         return SizedBox.shrink();
+//       },
+//     );
+//   }
+// }

@@ -7,6 +7,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import '../page/on_board.dart';
+
 
 
 class LoginWidget extends StatefulWidget {
@@ -82,17 +86,37 @@ class _LoginWidgetState extends State<LoginWidget> {
             height: 50,
             child: SignInButton(
               Buttons.google,
-        onPressed: () {
-              final provider =
-              Provider.of<GoogleSignInProvider>(context, listen: false);
-              provider.googleLogin();
-            },
+              onPressed:
+              (){}
+              //
+              //     () {
+              //   final provider =
+              //   Provider.of<GoogleSignInProvider>(context, listen: false);
+              //   provider.googleLogin();
+              // },
+            ),
             ),
 
+          // ElevatedButton(
+          //
+          //   onPressed: () async {
+          //     UserCredential authResult = (await _verifyUser(context)) as UserCredential;
+          //     if (authResult.additionalUserInfo?.isNewUser ?? false) {
+          //       Navigator.push(context,
+          //           MaterialPageRoute(builder: (context) => OnBoardingScreen()));
+          //     } else {
+          //       final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+          //       provider.googleLogin();
+          //     }
+          //   },
+          //   child: Text('Sign In with Googles'),
+         // ),
 
 
 
-          ),
+          // SignInPage(),
+
+          GoogleSignInScreen(),
           SizedBox(height: 24),
           GestureDetector(
             child: Text(
@@ -156,5 +180,81 @@ class _LoginWidgetState extends State<LoginWidget> {
 
     // Navigator.of(context) not working!
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
+  }
+}
+
+
+Future _verifyUser(BuildContext context) async {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  try {
+    GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+    GoogleSignInAuthentication gSA = await googleSignInAccount!.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: gSA.accessToken,
+      idToken: gSA.idToken,
+    );
+    UserCredential authResult = await FirebaseAuth.instance
+        .signInWithCredential(credential);
+    if (authResult.additionalUserInfo?.isNewUser ?? false) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => OnBoardingScreen()));
+    } else {
+      final provider =
+      Provider.of<GoogleSignInProvider>(context, listen: false);
+      provider.googleLogin();
+    }
+  } catch (e) {
+    // print(e.toString());
+  }
+  return null;
+}
+
+
+class GoogleSignInScreen extends StatefulWidget {
+  @override
+  _GoogleSignInScreenState createState() => _GoogleSignInScreenState();
+}
+
+class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
+  GoogleSignInAccount? _googleSignInAccount;
+
+  Future<void> _googleSignIn() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      GoogleSignInAuthentication gSA = await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: gSA.accessToken,
+        idToken: gSA.idToken,
+      );
+      UserCredential authResult = await FirebaseAuth.instance
+          .signInWithCredential(credential);
+      if (authResult.additionalUserInfo?.isNewUser ?? false) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+        );
+      } else {
+        // Handle existing user
+      }
+    } catch (e) {
+      // Handle the error
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return  Center(
+        child: Container(
+          width: screenWidth,
+          height: 50,
+          child: SignInButton(
+          Buttons.google,
+            onPressed: _googleSignIn,
+
+          ),
+        ),
+      );
   }
 }
