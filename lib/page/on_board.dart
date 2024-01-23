@@ -15,10 +15,13 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
   final scrollController = ScrollController();
   bool isLastPage = false;
   bool isFirstPage = true;
+  bool isSecondPage = false;
+  bool isThirdPage = false;
 
   @override
   void dispose() {
     controller.dispose();
+    scrollController.dispose();
 
     super.dispose();
   }
@@ -63,8 +66,9 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                 controller: controller,
                 onPageChanged: (index) {
                   setState(() {
-                    isLastPage = index == 2;
                     isFirstPage = index == 0;
+                    isSecondPage = index == 1;
+                    isLastPage = index == 3;
                   });
                 },
                 children: [
@@ -96,6 +100,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               listData: rank,
                               onSelectedValueChange: (value) {
                                 selectedValues['rank'] = value;
+                                selectedRank = selectedValues['rank'];
                               },
                             ),
                             SizedBox(
@@ -109,6 +114,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               listData: months,
                               onSelectedValueChange: (value) {
                                 selectedValues['month'] = value;
+                                selectedMonth = selectedValues['month'];
                               },
                             ),
                             SizedBox(
@@ -122,6 +128,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               listData: fac,
                               onSelectedValueChange: (value) {
                                 selectedValues['fac'] = value;
+                                selectedFac = selectedValues['fac'];
                               },
                             ),
                             SizedBox(
@@ -135,6 +142,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               listData: rlLevel,
                               onSelectedValueChange: (value) {
                                 selectedValues['rlLevel'] = value;
+                                selectedRL = selectedValues['rlLevel'];
                               },
                             ),
                             SizedBox(height: 10),
@@ -159,13 +167,15 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                       SizedBox(height: 20),
                     ],
                   ),
-                  // Stack(alignment: Alignment.center, children: [DateInput()])
                   Column(
                     children: [
                       Form(
                           key: _semiKey,
                           child: Column(
                             children: [
+                              SizedBox(
+                                height: 20,
+                              ),
                               userinputHours(
                                   label: 'Current Semi Annual hours',
                                   controller: _totalsemiHours),
@@ -188,6 +198,17 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                   label:
                                       'Current Semi Annual Hood/Weather hours',
                                   controller: _hwSemi),
+                            ],
+                          ))
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Form(
+                          key: _semisimKey,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
                               userinputHours(
                                   label: 'Current Semi Annual Total SIM Hours',
                                   controller: _simtotalSemi),
@@ -232,13 +253,16 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                         child: const Text('Submit',
                             style: TextStyle(fontSize: 18)),
                         onPressed: () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          initialOnboardData();
-                          totalHours();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
-                          );
+                          if (_semisimKey.currentState!.validate()) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            initialOnboardData();
+                            totalHours();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()),
+                            );
+                          }
                         },
                       ),
                     ],
@@ -300,80 +324,120 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                         ],
                       ),
                     )
-                  : Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      height: 80,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            child: const Text('Back',
-                                style: TextStyle(fontSize: 18)),
-                            onPressed: () {
-                              scrollController.jumpTo(0.0);
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              controller.previousPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Next',
-                                style: TextStyle(fontSize: 18)),
-                            onPressed: () {
-                              scrollController.jumpTo(0.0);
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              if (_totalKey.currentState!.validate() ||
-                                  selectedValues['rank'] != null ||
-                                  selectedValues['month'] != null ||
-                                  selectedValues['fac'] != null ||
-                                  selectedValues['rlLevel'] != null) {
-                                controller.nextPage(
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut,
-                                );
-                              } else if (selectedMonth == null ||
-                                  selectedFac == null) {
-                                scrollController.jumpTo(0.0);
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                final selectAirframe = SnackBar(
-                                  duration: Duration(seconds: 2),
-                                  content: Center(
-                                    child: Container(
-                                      height: 40,
-                                      width: screenWidth * .45,
-                                      padding: EdgeInsets.all(5),
-                                      //screenWidth * .25,
+                  : isSecondPage
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          height: 80,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                child: const Text('Back',
+                                    style: TextStyle(fontSize: 18)),
+                                onPressed: () {
+                                  scrollController.jumpTo(0.0);
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  controller.previousPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('Next',
+                                    style: TextStyle(fontSize: 18)),
+                                onPressed: () {
+                                  scrollController.jumpTo(0.0);
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  if (_totalKey.currentState!.validate() &&
+                                      selectedValues['rank'] != null &&
+                                      selectedValues['month'] != null &&
+                                      selectedValues['fac'] != null &&
+                                      selectedValues['rlLevel'] != null) {
+                                    controller.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  } else if (selectedMonth == null ||
+                                      selectedFac == null) {
+                                    scrollController.jumpTo(0.0);
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    final selectAirframe = SnackBar(
+                                      duration: Duration(seconds: 2),
+                                      content: Center(
+                                        child: Container(
+                                          height: 40,
+                                          width: screenWidth * .45,
+                                          padding: EdgeInsets.all(5),
+                                          //screenWidth * .25,
 
-                                      decoration: BoxDecoration(
-                                          color: myTheme.errorContainer,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15))),
-                                      child: Center(
-                                        child: Text(
-                                            'Select a Rank, Birth Month, FAC and RL',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center),
+                                          decoration: BoxDecoration(
+                                              color: myTheme.errorContainer,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15))),
+                                          child: Center(
+                                            child: Text(
+                                                'Select a Rank, Birth Month, FAC and RL',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.center),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(selectAirframe);
-                              }
-                            },
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(selectAirframe);
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          height: 80,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                child: const Text('Back',
+                                    style: TextStyle(fontSize: 18)),
+                                onPressed: () {
+                                  scrollController.jumpTo(0.0);
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  controller.previousPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('Next',
+                                    style: TextStyle(fontSize: 18)),
+                                onPressed: () {
+                                  if (_semiKey.currentState!.validate()) {
+                                    scrollController.jumpTo(0.0);
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    controller.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        )),
     );
   }
 }
@@ -535,7 +599,6 @@ class _RadioExampleState extends State<RadioExample> {
 }
 
 List<String> months = [
-  'SELECT',
   'JANUARY',
   'FEBRUARY',
   'MARCH',
@@ -551,21 +614,18 @@ List<String> months = [
 ];
 
 List<String> fac = [
-  'SELECT',
   'FAC 1',
   'FAC 2',
   'FAC 3',
 ];
 
 List<String> rlLevel = [
-  'SELECT',
   'RL 1',
   'RL 2',
   'RL 3',
 ];
 
 List<String> rank = [
-  'SELECT',
   'WO1',
   'CW2',
   'CW3',
@@ -627,6 +687,7 @@ class _dropdownMenuState extends State<dropdownMenu> {
               borderRadius: BorderRadius.circular(5.0),
             ),
             child: DropdownButton<String>(
+              hint: Text('Choose a Value'),
               menuMaxHeight: 250,
               style: TextStyle(fontSize: 15),
               isExpanded: true,
@@ -676,6 +737,7 @@ final _fssimSemi = TextEditingController();
 final _gcoftSemi = TextEditingController();
 final _totalKey = GlobalKey<FormState>();
 final _semiKey = GlobalKey<FormState>();
+final _semisimKey = GlobalKey<FormState>();
 
 class userinputHours extends StatelessWidget {
   final String label;
