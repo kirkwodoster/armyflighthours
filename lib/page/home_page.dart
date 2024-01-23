@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_verify_email/main.dart';
-import 'package:firebase_auth_verify_email/page/on_board.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth_verify_email/widget/login_widget.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -53,11 +50,10 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => MainPage()),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
-
-
-              },),
+              },
+            ),
             // CheckUserMonth()
           ],
         ),
@@ -84,8 +80,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                buildHeader(context),
-                buildMenuItems(context),
+            buildHeader(context),
+            buildMenuItems(context),
           ])));
 
   Widget buildHeader(BuildContext context) => Material(
@@ -105,7 +101,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                 CircleAvatar(
                   radius: 52,
                   backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
+                    'https://2.bp.blogspot.com/--Y_lR3HCDUg/UP4qgIRcSkI/AAAAAAAAARc/suPsSut9Pmk/s1600/CageHeli.jpg',
                   ),
                 ),
                 SizedBox(height: 12),
@@ -174,9 +170,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       );
 }
 
-
-
-
 //
 // Future<User?> _signIn() async {
 //   final googleSignIn = GoogleSignIn();
@@ -199,12 +192,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 //     print(e.toString());
 //   }
 // }
-
-
-
-
-
-
 
 // class CheckUserMonth extends StatefulWidget {
 //   @override

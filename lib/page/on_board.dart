@@ -12,6 +12,7 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnboardingPageState extends State<OnBoardingScreen> {
   final controller = PageController();
+  final scrollController = ScrollController();
   bool isLastPage = false;
   bool isFirstPage = true;
 
@@ -32,8 +33,26 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
 
     return SafeArea(
       child: Scaffold(
+          appBar: AppBar(
+            titleSpacing: 10,
+            backgroundColor: myTheme.inversePrimary,
+            title: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                    width: 50,
+                    height: 50,
+                    child: Image.asset('assets/images/insignia.png')),
+                SizedBox(
+                  width: 65,
+                ),
+                Text('Army Flight Hours'),
+              ],
+            ),
+          ),
           resizeToAvoidBottomInset: true, // Set this to true
           body: SingleChildScrollView(
+            controller: scrollController,
             child: Container(
               height: screenHeight * .95,
               padding: const EdgeInsets.only(bottom: 80),
@@ -60,46 +79,83 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                     ],
                   ),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: 10),
-                      Form(
-                        key: _totalKey,
+                      SizedBox(height: 20),
+                      Container(
+                        width: screenWidth * 0.85,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          // mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            userinputHours(
-                                label: 'Total Hours', controller: _totalHours),
-                            userinputHours(
-                                label: 'Total NVD Hours',
-                                controller: _totalNVD),
+                            Text('Select Rank'),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            dropdownMenu(
+                              listData: rank,
+                              onSelectedValueChange: (value) {
+                                selectedValues['rank'] = value;
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text('Select Birth Month'),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            dropdownMenu(
+                              listData: months,
+                              onSelectedValueChange: (value) {
+                                selectedValues['month'] = value;
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text('Select Flight Activity Level'),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            dropdownMenu(
+                              listData: fac,
+                              onSelectedValueChange: (value) {
+                                selectedValues['fac'] = value;
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text('Select Readiness Level'),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            dropdownMenu(
+                              listData: rlLevel,
+                              onSelectedValueChange: (value) {
+                                selectedValues['rlLevel'] = value;
+                              },
+                            ),
+                            SizedBox(height: 10),
+                            Form(
+                              key: _totalKey,
+                              child: Column(
+                                children: [
+                                  userinputHours(
+                                      label: 'Total Hours',
+                                      controller: _totalHours),
+                                  SizedBox(height: 20),
+                                  userinputHours(
+                                      label: 'Total NVD Hours',
+                                      controller: _totalNVD),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Container(
-                          width: screenWidth * 0.85,
-                          child: Text('Select Month of Birth',
-                              textAlign: TextAlign.left)),
-                      SizedBox(height: 20),
-                      // MonthButton(),
-                      Column(
-                        //crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          monthDropDown(),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          facDropDown(),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      // Container(
-                      //     width: screenWidth * 0.85,
-                      //     child: Text('Select FAC Level',
-                      //         textAlign: TextAlign.left)),
-                      // SizedBox(height: 20),
-                      // facAviator(),
                       SizedBox(height: 20),
                     ],
                   ),
@@ -170,6 +226,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
                             );
+                            scrollController.jumpTo(0.0);
                           }),
                       TextButton(
                         child: const Text('Submit',
@@ -199,6 +256,8 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                 style: TextStyle(fontSize: 18)),
                             onPressed: () {
                               FocusManager.instance.primaryFocus?.unfocus();
+                              scrollController.jumpTo(0.0);
+
                               if (selectedAirframe == null) {
                                 final selectAirframe = SnackBar(
                                   duration: Duration(seconds: 2),
@@ -251,6 +310,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                             child: const Text('Back',
                                 style: TextStyle(fontSize: 18)),
                             onPressed: () {
+                              scrollController.jumpTo(0.0);
                               FocusManager.instance.primaryFocus?.unfocus();
                               controller.previousPage(
                                 duration: const Duration(milliseconds: 500),
@@ -262,16 +322,20 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                             child: const Text('Next',
                                 style: TextStyle(fontSize: 18)),
                             onPressed: () {
+                              scrollController.jumpTo(0.0);
                               FocusManager.instance.primaryFocus?.unfocus();
-                              if (_totalKey.currentState!.validate() &&
-                                  selectedMonth != null &&
-                                  selectedFac != null) {
+                              if (_totalKey.currentState!.validate() ||
+                                  selectedValues['rank'] != null ||
+                                  selectedValues['month'] != null ||
+                                  selectedValues['fac'] != null ||
+                                  selectedValues['rlLevel'] != null) {
                                 controller.nextPage(
                                   duration: const Duration(milliseconds: 500),
                                   curve: Curves.easeInOut,
                                 );
                               } else if (selectedMonth == null ||
                                   selectedFac == null) {
+                                scrollController.jumpTo(0.0);
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 final selectAirframe = SnackBar(
                                   duration: Duration(seconds: 2),
@@ -285,10 +349,10 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                       decoration: BoxDecoration(
                                           color: myTheme.errorContainer,
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(20))),
+                                              Radius.circular(15))),
                                       child: Center(
                                         child: Text(
-                                            'Select a Birth Month and FAC Level',
+                                            'Select a Rank, Birth Month, FAC and RL',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 14,
@@ -422,7 +486,6 @@ class _RadioExampleState extends State<RadioExample> {
               ),
             ),
           ),
-          SizedBox(height: 0),
           Container(
             // width: 250,
             // height: 200,
@@ -472,151 +535,124 @@ class _RadioExampleState extends State<RadioExample> {
 }
 
 List<String> months = [
-  'JAN',
-  'FEB',
-  'MAR',
-  'APR',
+  'SELECT',
+  'JANUARY',
+  'FEBRUARY',
+  'MARCH',
+  'APRIL',
   'MAY',
-  'JUN',
-  'JUL',
-  'AUG',
-  'SEP',
-  'OCT',
-  'NOV',
-  'DEC'
+  'JUNE',
+  'JULY',
+  'AUGUST',
+  'SEPTEMBER',
+  'OCTOBER',
+  'NOVEMBER',
+  'DECEMBER'
 ];
 
-String? selectedMonth;
-
-class monthDropDown extends StatefulWidget {
-  const monthDropDown({Key? key}) : super(key: key);
-
-  @override
-  State<monthDropDown> createState() => _monthDropDownState();
-}
-
-class _monthDropDownState extends State<monthDropDown> {
-  String selectedMonth = months.first;
-  @override
-  Widget build(BuildContext context) {
-    final myTheme = Theme.of(context).colorScheme;
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            // width: screenWidth * 0.85,
-            decoration: BoxDecoration(
-              // color: myTheme.primary, borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: myTheme.primary,
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: DropdownButton<String>(
-                underline: Container(color: Colors.transparent),
-                value: selectedMonth,
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() => selectedMonth = value!);
-                  print(selectedMonth.toString());
-                },
-                selectedItemBuilder: (BuildContext context) {
-                  return months.map<Widget>((String item) {
-                    // This is the widget that will be shown when you select an item.
-                    // Here custom text style, alignment and layout size can be applied
-                    // to selected item string.
-                    return Container(
-                        alignment: Alignment.center,
-                        constraints: const BoxConstraints(minWidth: 100),
-                        child: Text(
-                          item,
-                        ));
-                  }).toList();
-                },
-                items: months.map<DropdownMenuItem<String>>((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 List<String> fac = [
+  'SELECT',
   'FAC 1',
   'FAC 2',
   'FAC 3',
 ];
-// const facDropDown({Key? key}) : super(key: key);
-String? selectedFac;
 
-class facDropDown extends StatefulWidget {
-  const facDropDown({Key? key}) : super(key: key);
+List<String> rlLevel = [
+  'SELECT',
+  'RL 1',
+  'RL 2',
+  'RL 3',
+];
+
+List<String> rank = [
+  'SELECT',
+  'WO1',
+  'CW2',
+  'CW3',
+  'CW4',
+  'CW5',
+  '2LT',
+  '1LT',
+  'CPT',
+  'MAJ',
+  'LTC',
+  'COL',
+  'CIVILIAN'
+];
+String? selectedRank;
+String? selectedMonth;
+String? selectedFac;
+String? selectedRL;
+
+Map<String, String> selectedValues = {};
+
+class dropdownMenu extends StatefulWidget {
+  final List<String> listData;
+  final ValueChanged<String> onSelectedValueChange;
+
+  const dropdownMenu({
+    Key? key,
+    required this.listData,
+    required this.onSelectedValueChange,
+  }) : super(key: key);
 
   @override
-  State<facDropDown> createState() => _facDropDownState();
+  State<dropdownMenu> createState() => _dropdownMenuState();
 }
 
-class _facDropDownState extends State<facDropDown> {
-  String selectedFac = fac.first;
+class _dropdownMenuState extends State<dropdownMenu> {
+  String? selectedData;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedData = widget.listData.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            // width: screenWidth * 0.85,
+            width: screenWidth * 0.85,
+            height: 40,
             decoration: BoxDecoration(
-              // color: myTheme.primary, borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: myTheme.primary,
               ),
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(5.0),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: DropdownButton<String>(
-                underline: Container(color: Colors.transparent),
-                value: selectedFac,
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() => selectedFac = value!);
-                },
-                selectedItemBuilder: (BuildContext context) {
-                  return fac.map<Widget>((String item) {
-                    // This is the widget that will be shown when you select an item.
-                    // Here custom text style, alignment and layout size can be applied
-                    // to selected item string.
-                    return Container(
-                        alignment: Alignment.center,
-                        constraints: const BoxConstraints(minWidth: 100),
-                        child: Text(
-                          item,
-                        ));
-                  }).toList();
-                },
-                items: fac.map<DropdownMenuItem<String>>((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-              ),
+            child: DropdownButton<String>(
+              menuMaxHeight: 250,
+              style: TextStyle(fontSize: 15),
+              isExpanded: true,
+              underline: Container(color: Colors.transparent),
+              value: selectedData,
+              onChanged: (String? value) {
+                setState(() => selectedData = value!);
+                widget.onSelectedValueChange(value!);
+              },
+              selectedItemBuilder: (BuildContext context) {
+                return widget.listData.map<Widget>((String item) {
+                  return Container(
+                      alignment: Alignment.center,
+                      // constraints: BoxConstraints(maxWidth: screenWidth * 0.5),
+                      child: Text(
+                        item,
+                      ));
+                }).toList();
+              },
+              items:
+                  widget.listData.map<DropdownMenuItem<String>>((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -624,86 +660,6 @@ class _facDropDownState extends State<facDropDown> {
     );
   }
 }
-
-// String? selectedMonth;
-// class MonthButton extends StatefulWidget {
-//   const MonthButton({Key? key}) : super(key: key);
-//
-//   @override
-//   _MonthButtonState createState() => _MonthButtonState();
-// }
-//
-// class _MonthButtonState extends State<MonthButton> {
-//   List<String> months = [
-//     'JAN',
-//     'FEB',
-//     'MAR',
-//     'APR',
-//     'MAY',
-//     'JUN',
-//     'JUL',
-//     'AUG',
-//     'SEP',
-//     'OCT',
-//     'NOV',
-//     'DEC'
-//   ];
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     double screenWidth = MediaQuery.of(context).size.width;
-//     // double screenHeight = MediaQuery.of(context).size.height;
-//     final myTheme = Theme.of(context).colorScheme;
-//     return Container(
-//       width: screenWidth * 0.85,
-//       // width: 300,
-//       child: Column(
-//         children: List.generate(4, (rowIndex) {
-//           return Row(
-//             children: List.generate(3, (columnIndex) {
-//               int monthIndex = rowIndex * 3 + columnIndex;
-//               if (monthIndex >= months.length) {
-//                 return Expanded(child: Container());
-//               }
-//               return Expanded(
-//                 child: Container(
-//                   padding: EdgeInsets.all(10),
-//                   child: OutlinedButton(
-//                     onPressed: () {
-//                       setState(() {
-//                         selectedMonth = months[monthIndex];
-//                         // int selectedMonthNumber = monthNameToInt(selectedMonth!);
-//                       });
-//                     },
-//                     child: Text(months[monthIndex],
-//                         style: TextStyle(fontSize: 13, color: Colors.white)),
-//                     style: OutlinedButton.styleFrom(
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius:
-//                             BorderRadius.circular(5.0), // Make it rectangle
-//                       ),
-//                       foregroundColor: selectedMonth == months[monthIndex]
-//                           ? myTheme.error
-//                           : myTheme.primary,
-//                       backgroundColor: selectedMonth == months[monthIndex]
-//                           ? myTheme.error
-//                           : myTheme.primary,
-//                       side: BorderSide(
-//                         color: selectedMonth == months[monthIndex]
-//                             ? myTheme.error
-//                             : myTheme.primary,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               );
-//             }),
-//           );
-//         }),
-//       ),
-//     );
-//   }
-// }
 
 final _totalHours = TextEditingController();
 final _totalNVD = TextEditingController();
@@ -749,10 +705,10 @@ class userinputHours extends StatelessWidget {
           // height: 60,
           child: TextFormField(
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 22),
+            // style: TextStyle(fontSize: 22),
             decoration: InputDecoration(
               isDense: true,
-              hintText: " Hours",
+              hintText: "0",
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
               enabledBorder: OutlineInputBorder(
@@ -778,77 +734,6 @@ class userinputHours extends StatelessWidget {
     );
   }
 }
-
-// String? selectedFac;
-//
-// class facAviator extends StatefulWidget {
-//   const facAviator({Key? key}) : super(key: key);
-//
-//   @override
-//   _facAviatorState createState() => _facAviatorState();
-// }
-//
-// class _facAviatorState extends State<facAviator> {
-//   List<String> fac = [
-//     'FAC 1',
-//     'FAC 2',
-//     'FAC 3',
-//   ];
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     double screenWidth = MediaQuery.of(context).size.width;
-//     // double screenHeight = MediaQuery.of(context).size.height;
-//     final myTheme = Theme.of(context).colorScheme;
-//     return Container(
-//       width: screenWidth * 0.85,
-//       // width: 300,
-//       child: Column(
-//         children: List.generate(1, (rowIndex) {
-//           return Row(
-//             children: List.generate(3, (columnIndex) {
-//               int facAvi = rowIndex * 3 + columnIndex;
-//               if (facAvi >= fac.length) {
-//                 return Expanded(child: Container());
-//               }
-//               return Expanded(
-//                 child: Container(
-//                   padding: EdgeInsets.all(10),
-//                   child: OutlinedButton(
-//                     onPressed: () {
-//                       setState(() {
-//                         selectedFac = fac[facAvi];
-//                       });
-//                     },
-//                     child: Text(fac[facAvi],
-//                         style: TextStyle(fontSize: 13, color: Colors.white)),
-//                     style: OutlinedButton.styleFrom(
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius:
-//                             BorderRadius.circular(5.0), // Make it rectangle
-//                       ),
-//                       foregroundColor: selectedFac == fac[facAvi]
-//                           ? myTheme.error
-//                           : myTheme.primary,
-//                       backgroundColor: selectedFac == fac[facAvi]
-//                           ? myTheme.error
-//                           : myTheme.primary,
-//                       side: BorderSide(
-//                         color: selectedFac == fac[facAvi]
-//                             ? myTheme.error
-//                             : myTheme.primary,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               );
-//             }),
-//           );
-//         }),
-//       ),
-//     );
-//   }
-// }
 
 Future initialOnboardData() async {
   final CollectionReference _usersCollection =
