@@ -28,6 +28,12 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(selectedMonth);
+    print(selectedAirframe);
+    print(selectedRL);
+    print(selectedFac);
+    print(selectedRank);
+
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -97,6 +103,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               height: 3,
                             ),
                             dropdownMenu(
+                              hintText: "WO1",
                               listData: rank,
                               onSelectedValueChange: (value) {
                                 selectedValues['rank'] = value;
@@ -111,6 +118,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               height: 3,
                             ),
                             dropdownMenu(
+                              hintText: "JANUARY",
                               listData: months,
                               onSelectedValueChange: (value) {
                                 selectedValues['month'] = value;
@@ -125,6 +133,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               height: 3,
                             ),
                             dropdownMenu(
+                              hintText: "FAC 1",
                               listData: fac,
                               onSelectedValueChange: (value) {
                                 selectedValues['fac'] = value;
@@ -139,6 +148,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               height: 3,
                             ),
                             dropdownMenu(
+                              hintText: "RL 1",
                               listData: rlLevel,
                               onSelectedValueChange: (value) {
                                 selectedValues['rlLevel'] = value;
@@ -350,10 +360,10 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                   scrollController.jumpTo(0.0);
                                   FocusManager.instance.primaryFocus?.unfocus();
                                   if (_totalKey.currentState!.validate() &&
-                                      selectedValues['rank'] != null &&
-                                      selectedValues['month'] != null &&
-                                      selectedValues['fac'] != null &&
-                                      selectedValues['rlLevel'] != null) {
+                                      selectedRank != null &&
+                                      selectedMonth != null &&
+                                      selectedFac != null &&
+                                      selectedRL != null) {
                                     controller.nextPage(
                                       duration:
                                           const Duration(milliseconds: 500),
@@ -613,12 +623,6 @@ List<String> months = [
   'DECEMBER'
 ];
 
-List<String> fac = [
-  'FAC 1',
-  'FAC 2',
-  'FAC 3',
-];
-
 List<String> rlLevel = [
   'RL 1',
   'RL 2',
@@ -639,21 +643,31 @@ List<String> rank = [
   'COL',
   'CIVILIAN'
 ];
-String? selectedRank;
-String? selectedMonth;
-String? selectedFac;
-String? selectedRL;
+
+List<String> fac = [
+  'FAC 1 ',
+  'FAC 2',
+  'FAC 3',
+];
+
+String? selectedRank = "WO!";
+String? selectedMonth = "JANUARY";
+String? selectedFac = "FAC 1";
+String? selectedRL = " RL 1";
+// String? selectedData;
 
 Map<String, String> selectedValues = {};
 
 class dropdownMenu extends StatefulWidget {
   final List<String> listData;
   final ValueChanged<String> onSelectedValueChange;
+  final String hintText;
 
   const dropdownMenu({
     Key? key,
     required this.listData,
     required this.onSelectedValueChange,
+    required this.hintText,
   }) : super(key: key);
 
   @override
@@ -666,13 +680,14 @@ class _dropdownMenuState extends State<dropdownMenu> {
   @override
   void initState() {
     super.initState();
-    selectedData = widget.listData.first;
+    // selectedData = widget.listData.first;
   }
 
   @override
   Widget build(BuildContext context) {
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
+
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -687,7 +702,8 @@ class _dropdownMenuState extends State<dropdownMenu> {
               borderRadius: BorderRadius.circular(5.0),
             ),
             child: DropdownButton<String>(
-              hint: Text('Choose a Value'),
+              hint: Container(
+                  alignment: Alignment.center, child: Text(widget.hintText)),
               menuMaxHeight: 250,
               style: TextStyle(fontSize: 15),
               isExpanded: true,
@@ -812,7 +828,9 @@ Future initialOnboardData() async {
 
   await _usersCollection
       .doc(uid)
-      .update(onboardData)
+      .collection('userdata')
+      .doc('userinfo')
+      .set(onboardData, SetOptions(merge: true))
       .then((value) => print("Data Added"))
       .catchError((error) => print("Failed to add data: $error"));
 }
@@ -844,7 +862,7 @@ Future totalHours() async {
       .doc(uid)
       .collection('userdata')
       .doc('onboardhours')
-      .set(totalhnvd)
+      .set(totalhnvd, SetOptions(merge: true))
       .then((value) => print("Data Added"))
       .catchError((error) => print("Failed to add data: $error"));
 }
