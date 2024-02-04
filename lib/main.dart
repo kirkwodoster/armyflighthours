@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_verify_email/page/auth_page.dart';
+import 'package:firebase_auth_verify_email/page/on_board.dart';
 import 'package:firebase_auth_verify_email/page/verify_email_page.dart';
 import 'package:firebase_auth_verify_email/provider/google_sign_in.dart';
 import 'package:firebase_auth_verify_email/utils.dart';
@@ -49,7 +49,8 @@ class MainPage extends StatelessWidget {
             if (snapshot.hasData) {
               return VerifyEmailPage();
             } else {
-              return AuthPage();
+              // return AuthPage();
+              return OnBoardingScreen();
             }
           },
         ),

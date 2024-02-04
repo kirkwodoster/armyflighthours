@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_verify_email/army_aircraft_icons.dart';
 import 'package:firebase_auth_verify_email/page/home_page.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:flutter/services.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -68,7 +69,6 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
               child: PageView(
                 allowImplicitScrolling: true,
                 physics: NeverScrollableScrollPhysics(),
-                // Add this line
                 controller: controller,
                 onPageChanged: (index) {
                   setState(() {
@@ -91,18 +91,15 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20),
                       Container(
                         width: screenWidth * 0.85,
+                        // height: screenHeight * 0.95,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           // mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('Select Rank'),
-                            SizedBox(
-                              height: 3,
-                            ),
                             dropdownMenu(
+                              title: 'Select Rank',
                               hintText: "WO1",
                               listData: rank,
                               onSelectedValueChange: (value) {
@@ -110,14 +107,8 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                 selectedRank = selectedValues['rank'];
                               },
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text('Select Birth Month'),
-                            SizedBox(
-                              height: 3,
-                            ),
                             dropdownMenu(
+                              title: 'Select Birth Month',
                               hintText: "JANUARY",
                               listData: months,
                               onSelectedValueChange: (value) {
@@ -125,60 +116,81 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                 selectedMonth = selectedValues['month'];
                               },
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text('Select Flight Activity Level'),
-                            SizedBox(
-                              height: 3,
-                            ),
                             dropdownMenu(
-                              hintText: "FAC 1",
-                              listData: fac,
+                              title: 'Select Type',
+                              hintText: "PI or PC",
+                              listData: type,
                               onSelectedValueChange: (value) {
-                                selectedValues['fac'] = value;
-                                selectedFac = selectedValues['fac'];
+                                setState(() {
+                                  selectedValues['type'] = value;
+                                  selectedType = selectedValues['type'];
+                                  if (value == 'PC') {
+                                    selectedValues['pcTrack'] = pcTrack[0];
+                                  }
+                                });
                               },
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text('Select Readiness Level'),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            dropdownMenu(
-                              hintText: "RL 1",
-                              listData: rlLevel,
-                              onSelectedValueChange: (value) {
-                                selectedValues['rlLevel'] = value;
-                                selectedRL = selectedValues['rlLevel'];
-                              },
-                            ),
-                            SizedBox(height: 10),
-                            Form(
-                              key: _totalKey,
-                              child: Column(
-                                children: [
-                                  userinputHours(
-                                      label: 'Total Hours',
-                                      controller: _totalHours),
-                                  SizedBox(height: 20),
-                                  userinputHours(
-                                      label: 'Total NVD Hours',
-                                      controller: _totalNVD),
-                                ],
+                            if (selectedType == 'PC')
+                              dropdownMenu(
+                                title: 'Select Track',
+                                hintText: "Select PC Track",
+                                listData: pcTrack,
+                                onSelectedValueChange: (value) {
+                                  setState(() {
+                                    selectedValues['pcTrack'] = value;
+                                    selectedpcTrack = selectedValues['type'];
+                                  });
+                                },
                               ),
+                            if (selectedType == 'PC')
+                              dropdownMenu(
+                                  title: 'Select Flight Activity Level',
+                                  hintText: "FAC 1",
+                                  listData: fac,
+                                  onSelectedValueChange: (value) {
+                                    setState(() {
+                                      selectedValues['fac'] = value;
+                                      selectedFac = selectedValues['fac'];
+                                    });
+                                  }),
+                            if (selectedType == 'PI')
+                              dropdownMenu(
+                                title: 'Select Readiness Level',
+                                hintText: "RL 1",
+                                listData: rlLevel,
+                                onSelectedValueChange: (value) {
+                                  setState(() {
+                                    selectedValues['rlLevel'] = value;
+                                    selectedRL = selectedValues['rlLevel'];
+                                  });
+                                },
+                              ),
+                            SizedBox(
+                              height: 10,
                             ),
-                            SizedBox(height: 20),
+                            dropdownButton()
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
                     ],
                   ),
                   Column(
                     children: [
+                      SizedBox(height: 10),
+                      Form(
+                        key: _totalKey,
+                        child: Column(
+                          children: [
+                            userinputHours(
+                                label: 'Total Hours', controller: _totalHours),
+                            SizedBox(height: 20),
+                            userinputHours(
+                                label: 'Total NVD Hours',
+                                controller: _totalNVD),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
                       Form(
                           key: _semiKey,
                           child: Column(
@@ -359,8 +371,12 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                 onPressed: () {
                                   scrollController.jumpTo(0.0);
                                   FocusManager.instance.primaryFocus?.unfocus();
-                                  if (_totalKey.currentState!.validate() &&
-                                      selectedRank != null &&
+                                  // controller.nextPage(
+                                  //   duration: const Duration(milliseconds: 500),
+                                  //   curve: Curves.easeInOut,
+                                  // );
+                                  // _totalKey.currentState!.validate()
+                                  if (selectedRank != null &&
                                       selectedMonth != null &&
                                       selectedFac != null &&
                                       selectedRL != null) {
@@ -650,11 +666,23 @@ List<String> fac = [
   'FAC 3',
 ];
 
-String? selectedRank = "WO!";
-String? selectedMonth = "JANUARY";
-String? selectedFac = "FAC 1";
-String? selectedRL = " RL 1";
-// String? selectedData;
+List<String> type = ['PI', 'PC'];
+
+List<String> pcTrack = ['Untracked', 'IP', 'SP', 'MTP', 'AMSO', 'Safety'];
+
+// String? selectedRank = "WO1";
+// String? selectedMonth = "JANUARY";
+// String? selectedFac = "FAC 1";
+// String? selectedRL = " RL 1";
+// String? selectedType = 'PC';
+// String? selectedpcTrack = 'Untracked';
+
+String? selectedRank;
+String? selectedMonth;
+String? selectedFac;
+String? selectedRL;
+String? selectedType;
+String? selectedpcTrack;
 
 Map<String, String> selectedValues = {};
 
@@ -662,12 +690,14 @@ class dropdownMenu extends StatefulWidget {
   final List<String> listData;
   final ValueChanged<String> onSelectedValueChange;
   final String hintText;
+  final String title;
 
   const dropdownMenu({
     Key? key,
     required this.listData,
     required this.onSelectedValueChange,
     required this.hintText,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -689,9 +719,16 @@ class _dropdownMenuState extends State<dropdownMenu> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Center(
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          SizedBox(
+            height: 10,
+          ),
+          Container(alignment: Alignment.centerLeft, child: Text(widget.title)),
+          SizedBox(
+            height: 3,
+          ),
           Container(
             width: screenWidth * 0.85,
             height: 40,
@@ -717,7 +754,6 @@ class _dropdownMenuState extends State<dropdownMenu> {
                 return widget.listData.map<Widget>((String item) {
                   return Container(
                       alignment: Alignment.center,
-                      // constraints: BoxConstraints(maxWidth: screenWidth * 0.5),
                       child: Text(
                         item,
                       ));
@@ -731,6 +767,9 @@ class _dropdownMenuState extends State<dropdownMenu> {
                 );
               }).toList(),
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
         ],
       ),
@@ -865,4 +904,171 @@ Future totalHours() async {
       .set(totalhnvd, SetOptions(merge: true))
       .then((value) => print("Data Added"))
       .catchError((error) => print("Failed to add data: $error"));
+}
+
+// class dropdown extends StatefulWidget {
+//   final List<String> listData;
+//   final ValueChanged<String> onSelectedValueChange;
+//   final String hintText;
+//   final String title;
+//
+//   const dropdownButton({
+//     Key? key,
+//     required this.listData,
+//     required this.onSelectedValueChange,
+//     required this.hintText,
+//     required this.title,
+//   }) : super(key: key);
+//
+//   @override
+//   State<dropdownButton> createState() => _dropdownButtonState();
+// }
+//
+// class _dropdownButtonState extends State<dropdownButton> {
+//   String? selectedData;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     // selectedData = widget.listData.first;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final myTheme = Theme.of(context).colorScheme;
+//     double screenWidth = MediaQuery.of(context).size.width;
+//
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           SizedBox(
+//             height: 10,
+//           ),
+//           Container(alignment: Alignment.centerLeft, child: Text(widget.title)),
+//           SizedBox(
+//             height: 3,
+//           ),
+//           Container(
+//             width: screenWidth * 0.85,
+//             height: 40,
+//             decoration: BoxDecoration(
+//               border: Border.all(
+//                 color: myTheme.primary,
+//               ),
+//               borderRadius: BorderRadius.circular(5.0),
+//             ),
+//             child: DropdownMenu<String>(
+//               hintText: widget.hintText,
+//               menuHeight: 250,
+//               textStyle: TextStyle(fontSize: 15),
+//               // isExpanded: true,
+//               // underline: Container(color: Colors.transparent),
+//               // value: selectedData,
+//               onSelected: (String? value) {
+//                 setState(() => selectedData = value!);
+//                 widget.onSelectedValueChange(value!);
+//               },
+//
+//               dropdownMenuEntries:
+//                   widget.listData.map<DropdownMenuEntry<String>>((String item) {
+//                 return DropdownMenuEntry<String>(
+//                   value: item,
+//                   label: '',
+//                 );
+//               }).toList(),
+//             ),
+//           ),
+//           SizedBox(
+//             height: 10,
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+//
+//
+
+// DropdownMenuEntry labels and values for the first dropdown menu.
+enum Track {
+  blue('PC', 'PC'),
+  pink('PI', 'PI');
+
+  const Track(this.label, this.color);
+  final String label;
+  final String color;
+}
+
+class dropdownButton extends StatefulWidget {
+  const dropdownButton({super.key});
+
+  @override
+  State<dropdownButton> createState() => _dropdownButtonState();
+}
+
+class _dropdownButtonState extends State<dropdownButton> {
+  final TextEditingController colorController = TextEditingController();
+  final TextEditingController iconController = TextEditingController();
+  Track? selectedColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final myTheme = Theme.of(context).colorScheme;
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              DropdownMenu<Track>(
+                // initialSelection: Track.blue,
+                controller: colorController,
+                width: screenWidth * 0.75,
+                enableSearch: false,
+                enableFilter: false,
+
+                // requestFocusOnTap is enabled/disabled by platforms when it is null.
+                // On mobile platforms, this is false by default. Setting this to true will
+                // trigger focus request on the text field and virtual keyboard will appear
+                // afterward. On desktop platforms however, this defaults to true.
+                requestFocusOnTap: true,
+                inputDecorationTheme: InputDecorationTheme(
+                    enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                      color: myTheme.primary,
+                      width: 2), // Change the color and width here
+                )),
+                label: const Text(
+                  'Select Track',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onSelected: (Track? color) {
+                  setState(() {
+                    selectedColor = color;
+                  });
+                },
+                dropdownMenuEntries:
+                    Track.values.map<DropdownMenuEntry<Track>>((Track color) {
+                  return DropdownMenuEntry<Track>(
+                    value: color,
+                    label: color.label,
+                    enabled: color.label != 'Grey',
+                    style: MenuItemButton.styleFrom(
+                        // foregroundColor: myTheme.primary,
+                        // backgroundColor: myTheme.primary,
+                        ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(width: 24),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }

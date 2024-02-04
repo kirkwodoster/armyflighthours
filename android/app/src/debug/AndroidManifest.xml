@@ -3,5 +3,12 @@
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
+<!--    <application-->
+<!--        android:name=".MainActivity"-->
+<!--    android:enableOnBackInvokedCallback="true">-->
+
+<!--    &lt;!&ndash; Your activities go here &ndash;&gt;-->
+
+<!--</application>-->
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
