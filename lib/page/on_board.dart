@@ -153,22 +153,18 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                       selectedFac = selectedValues['fac'];
                                     });
                                   }),
-                            if (selectedType == 'PI')
-                              dropdownMenu(
-                                title: 'Select Readiness Level',
-                                hintText: "RL 1",
-                                listData: rlLevel,
-                                onSelectedValueChange: (value) {
-                                  setState(() {
-                                    selectedValues['rlLevel'] = value;
-                                    selectedRL = selectedValues['rlLevel'];
-                                  });
-                                },
-                              ),
                             SizedBox(
                               height: 10,
                             ),
-                            dropdownButton()
+                            CustomDropdown<Track>(
+                              label: 'Select Track',
+                              initialValue: Track.blue,
+                              items: Track.values,
+                              onSelected: (Track track) {
+                                print('Selected track: ${track.label}');
+                              },
+                            )
+                            // if (selectedType == 'PI') dropdownButton()
                           ],
                         ),
                       ),
@@ -991,80 +987,170 @@ Future totalHours() async {
 //
 
 // DropdownMenuEntry labels and values for the first dropdown menu.
-enum Track {
-  blue('PC', 'PC'),
-  pink('PI', 'PI');
+// enum Track {
+//   first('PC', 1),
+//   second('PI', 2);
+//
+//   const Track(this.label, this.number);
+//   final String label;
+//   final int number;
+// }
 
-  const Track(this.label, this.color);
+// class dropdownButton extends StatefulWidget {
+//   final List<String> listData;
+//   const dropdownButton({
+//     Key? key,
+//     required this.listData,
+//   }) : super(key: key);
+//
+//   @override
+//   State<dropdownButton> createState() => _dropdownButtonState();
+// }
+//
+// class _dropdownButtonState extends State<dropdownButton> {
+//   final TextEditingController colorController = TextEditingController();
+//   final TextEditingController iconController = TextEditingController();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final myTheme = Theme.of(context).colorScheme;
+//     double screenWidth = MediaQuery.of(context).size.width;
+//     return Column(
+//       children: <Widget>[
+//         Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 20),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: <Widget>[
+//               DropdownMenu<listData>(
+//                 // initialSelection: Track.blue,
+//                 controller: colorController,
+//                 width: screenWidth * 0.75,
+//                 enableSearch: false,
+//                 enableFilter: false,
+//
+//                 // requestFocusOnTap is enabled/disabled by platforms when it is null.
+//                 // On mobile platforms, this is false by default. Setting this to true will
+//                 // trigger focus request on the text field and virtual keyboard will appear
+//                 // afterward. On desktop platforms however, this defaults to true.
+//                 requestFocusOnTap: true,
+//                 inputDecorationTheme: InputDecorationTheme(
+//                     enabledBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(10.0),
+//                   borderSide: BorderSide(
+//                       color: myTheme.primary,
+//                       width: 2), // Change the color and width here
+//                 )),
+//                 label: const Text(
+//                   'Select Track',
+//                   style: TextStyle(color: Colors.white),
+//                 ),
+//                 onSelected: (enumList? color) {
+//                   setState(() {
+//                     selectedColor = color;
+//                   });
+//                 },
+//                 dropdownMenuEntries: enumList.values
+//                     .map<DropdownMenuEntry<enumList>>((enumList color) {
+//                   return DropdownMenuEntry<enumList>(
+//                     value: color,
+//                     label: color.label,
+//                     enabled: color.label != 'Grey',
+//                     style: MenuItemButton.styleFrom(
+//                         // foregroundColor: myTheme.primary,
+//                         // backgroundColor: myTheme.primary,
+//                         ),
+//                   );
+//                 }).toList(),
+//               ),
+//               const SizedBox(width: 24),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+enum Track {
+  blue('PC', 1),
+  pink('PI', 2);
+
+  const Track(this.label, this.number);
   final String label;
-  final String color;
+  final int number;
 }
 
-class dropdownButton extends StatefulWidget {
-  const dropdownButton({super.key});
+class CustomDropdown<T> extends StatefulWidget {
+  final String label;
+  final T? initialValue;
+  final List<T> items;
+  final Function(T) onSelected;
+  final double width;
+  final bool enableSearch;
+  final bool enableFilter;
+
+  const CustomDropdown({
+    required this.label,
+    this.initialValue,
+    required this.items,
+    required this.onSelected,
+    this.width = double.infinity,
+    this.enableSearch = false,
+    this.enableFilter = false,
+  });
 
   @override
-  State<dropdownButton> createState() => _dropdownButtonState();
+  State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
 }
 
-class _dropdownButtonState extends State<dropdownButton> {
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController iconController = TextEditingController();
-  Track? selectedColor;
+class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
+  T? _selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.initialValue;
+  }
 
   @override
   Widget build(BuildContext context) {
     final myTheme = Theme.of(context).colorScheme;
-    double screenWidth = MediaQuery.of(context).size.width;
     return Column(
-      children: <Widget>[
+      children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              DropdownMenu<Track>(
-                // initialSelection: Track.blue,
-                controller: colorController,
-                width: screenWidth * 0.75,
-                enableSearch: false,
-                enableFilter: false,
-
-                // requestFocusOnTap is enabled/disabled by platforms when it is null.
-                // On mobile platforms, this is false by default. Setting this to true will
-                // trigger focus request on the text field and virtual keyboard will appear
-                // afterward. On desktop platforms however, this defaults to true.
+            children: [
+              DropdownMenu<T>(
+                width: 200,
+                enableSearch: widget.enableSearch,
+                enableFilter: widget.enableFilter,
                 requestFocusOnTap: true,
                 inputDecorationTheme: InputDecorationTheme(
-                    enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
                       color: myTheme.primary,
-                      width: 2), // Change the color and width here
-                )),
-                label: const Text(
-                  'Select Track',
-                  style: TextStyle(color: Colors.white),
+                      width: 2,
+                    ),
+                  ),
                 ),
-                onSelected: (Track? color) {
-                  setState(() {
-                    selectedColor = color;
-                  });
-                },
-                dropdownMenuEntries:
-                    Track.values.map<DropdownMenuEntry<Track>>((Track color) {
-                  return DropdownMenuEntry<Track>(
-                    value: color,
-                    label: color.label,
-                    enabled: color.label != 'Grey',
-                    style: MenuItemButton.styleFrom(
-                        // foregroundColor: myTheme.primary,
-                        // backgroundColor: myTheme.primary,
-                        ),
+                label: Text(widget.label,
+                    style: TextStyle(color: myTheme.primary)),
+                onSelected: (T? value) => setState(() {
+                  _selectedValue = value;
+                  widget.onSelected(value!);
+                }),
+                dropdownMenuEntries: widget.items.map((T value) {
+                  final track = value as Track; // Cast to access label property
+                  return DropdownMenuEntry<T>(
+                    value: value,
+                    label: track.label, // Adjust display based on enum type
                   );
                 }).toList(),
               ),
-              const SizedBox(width: 24),
             ],
           ),
         ),
