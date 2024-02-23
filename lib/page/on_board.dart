@@ -163,7 +163,16 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               onSelected: (Track track) {
                                 print('Selected track: ${track.label}');
                               },
+                            ),
+                            DropdownMenuExample(
+                              colorLabels: ['Red', 'Green', 'Blue'],
+                              colorValues: [
+                                Colors.red,
+                                Colors.green,
+                                Colors.blue
+                              ],
                             )
+
                             // if (selectedType == 'PI') dropdownButton()
                           ],
                         ),
@@ -1144,10 +1153,11 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                   widget.onSelected(value!);
                 }),
                 dropdownMenuEntries: widget.items.map((T value) {
-                  final track = value as Track; // Cast to access label property
+                  // Cast to access label property
                   return DropdownMenuEntry<T>(
                     value: value,
-                    label: track.label, // Adjust display based on enum type
+                    label: value.toString(),
+                    // Adjust display based on enum type
                   );
                 }).toList(),
               ),
@@ -1155,6 +1165,53 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class DropdownMenuExample extends StatelessWidget {
+  final List<String> colorLabels;
+  final List<Color> colorValues;
+
+  const DropdownMenuExample({
+    super.key,
+    required this.colorLabels,
+    required this.colorValues,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 100,
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                DropdownMenu<int>(
+                  width: 200,
+                  initialSelection: 0,
+                  controller: TextEditingController(),
+                  requestFocusOnTap: true,
+                  label: const Text('Color'),
+                  onSelected: (int? index) {},
+                  dropdownMenuEntries: colorLabels
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => DropdownMenuEntry<int>(
+                            value: entry.key, label: entry.value.toString()),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
