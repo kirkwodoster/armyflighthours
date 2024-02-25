@@ -98,82 +98,82 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           // mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            dropdownMenu(
-                              title: 'Select Rank',
-                              hintText: "WO1",
-                              listData: rank,
-                              onSelectedValueChange: (value) {
-                                selectedValues['rank'] = value;
-                                selectedRank = selectedValues['rank'];
-                              },
-                            ),
-                            dropdownMenu(
-                              title: 'Select Birth Month',
-                              hintText: "JANUARY",
-                              listData: months,
-                              onSelectedValueChange: (value) {
-                                selectedValues['month'] = value;
-                                selectedMonth = selectedValues['month'];
-                              },
-                            ),
-                            dropdownMenu(
-                              title: 'Select Type',
-                              hintText: "PI or PC",
-                              listData: type,
-                              onSelectedValueChange: (value) {
-                                setState(() {
-                                  selectedValues['type'] = value;
-                                  selectedType = selectedValues['type'];
-                                  if (value == 'PC') {
-                                    selectedValues['pcTrack'] = pcTrack[0];
-                                  }
-                                });
-                              },
-                            ),
-                            if (selectedType == 'PC')
-                              dropdownMenu(
-                                title: 'Select Track',
-                                hintText: "Select PC Track",
-                                listData: pcTrack,
-                                onSelectedValueChange: (value) {
-                                  setState(() {
-                                    selectedValues['pcTrack'] = value;
-                                    selectedpcTrack = selectedValues['type'];
-                                  });
-                                },
-                              ),
-                            if (selectedType == 'PC')
-                              dropdownMenu(
-                                  title: 'Select Flight Activity Level',
-                                  hintText: "FAC 1",
-                                  listData: fac,
-                                  onSelectedValueChange: (value) {
-                                    setState(() {
-                                      selectedValues['fac'] = value;
-                                      selectedFac = selectedValues['fac'];
-                                    });
-                                  }),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            CustomDropdown<Track>(
-                              label: 'Select Track',
-                              initialValue: Track.blue,
-                              items: Track.values,
-                              onSelected: (Track track) {
-                                print('Selected track: ${track.label}');
-                              },
+                            DropdownMenuExample(
+                                controllerType: rank,
+                                hintText: 'Rank',
+                                boxlabel: 'Rank',
+                                labels: [
+                                  'WO1',
+                                  'CW2',
+                                  'CW3',
+                                  'CW4',
+                                  'CW5',
+                                  '2LT',
+                                  '1LT',
+                                  'CPT',
+                                  'MAJ',
+                                  'LTC',
+                                  'COL',
+                                  'CIVILIAN',
+                                ]),
+                            DropdownMenuExample(
+                              controllerType: birthDate,
+                              hintText: 'Type',
+                              boxlabel: 'Birth Month',
+                              labels: [
+                                'JANUARY',
+                                'FEBRUARY',
+                                'MARCH',
+                                'APRIL',
+                                'MAY',
+                                'JUNE',
+                                'JULY',
+                                'AUGUST',
+                                'SEPTEMBER',
+                                'OCTOBER',
+                                'NOVEMBER',
+                                'DECEMBER'
+                              ],
                             ),
                             DropdownMenuExample(
-                              colorLabels: ['Red', 'Green', 'Blue'],
-                              colorValues: [
-                                Colors.red,
-                                Colors.green,
-                                Colors.blue
-                              ],
-                            )
-
-                            // if (selectedType == 'PI') dropdownButton()
+                              onSelectedValueChange: (label) =>
+                                  setState(() => label),
+                              controllerType: type,
+                              boxlabel: 'PC or PI',
+                              hintText: 'Type',
+                              labels: ['PC', 'PI'],
+                            ),
+                            Visibility(
+                              visible: type.text ==
+                                  "PC", // Use 'change' for visibility check
+                              child: DropdownMenuExample(
+                                boxlabel: 'PC Track',
+                                controllerType: tracks,
+                                hintText: 'Type',
+                                labels: [
+                                  'Untracked',
+                                  'IP',
+                                  'SP',
+                                  'MTP',
+                                  'AMSO',
+                                  'Safety'
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible: type.text ==
+                                  "PI", // Use 'change' for visibility check
+                              child: DropdownMenuExample(
+                                controllerType: fac,
+                                hintText: 'Type',
+                                boxlabel: 'FAC Level',
+                                labels: [
+                                  'FAC 1 ',
+                                  'FAC 2',
+                                  'FAC 3',
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -629,51 +629,51 @@ class _RadioExampleState extends State<RadioExample> {
   }
 }
 
-List<String> months = [
-  'JANUARY',
-  'FEBRUARY',
-  'MARCH',
-  'APRIL',
-  'MAY',
-  'JUNE',
-  'JULY',
-  'AUGUST',
-  'SEPTEMBER',
-  'OCTOBER',
-  'NOVEMBER',
-  'DECEMBER'
-];
-
-List<String> rlLevel = [
-  'RL 1',
-  'RL 2',
-  'RL 3',
-];
-
-List<String> rank = [
-  'WO1',
-  'CW2',
-  'CW3',
-  'CW4',
-  'CW5',
-  '2LT',
-  '1LT',
-  'CPT',
-  'MAJ',
-  'LTC',
-  'COL',
-  'CIVILIAN'
-];
-
-List<String> fac = [
-  'FAC 1 ',
-  'FAC 2',
-  'FAC 3',
-];
-
-List<String> type = ['PI', 'PC'];
-
-List<String> pcTrack = ['Untracked', 'IP', 'SP', 'MTP', 'AMSO', 'Safety'];
+// List<String> months = [
+//   'JANUARY',
+//   'FEBRUARY',
+//   'MARCH',
+//   'APRIL',
+//   'MAY',
+//   'JUNE',
+//   'JULY',
+//   'AUGUST',
+//   'SEPTEMBER',
+//   'OCTOBER',
+//   'NOVEMBER',
+//   'DECEMBER'
+// ];
+//
+// List<String> rlLevel = [
+//   'RL 1',
+//   'RL 2',
+//   'RL 3',
+// ];
+//
+// List<String> rank = [
+//   'WO1',
+//   'CW2',
+//   'CW3',
+//   'CW4',
+//   'CW5',
+//   '2LT',
+//   '1LT',
+//   'CPT',
+//   'MAJ',
+//   'LTC',
+//   'COL',
+//   'CIVILIAN'
+// ];
+//
+// List<String> fac = [
+//   'FAC 1 ',
+//   'FAC 2',
+//   'FAC 3',
+// ];
+//
+// // List<String> type = ['PI', 'PC'];
+//
+// List<String> pcTrack = ['Untracked', 'IP', 'SP', 'MTP', 'AMSO', 'Safety'];
 
 // String? selectedRank = "WO1";
 // String? selectedMonth = "JANUARY";
@@ -689,7 +689,7 @@ String? selectedRL;
 String? selectedType;
 String? selectedpcTrack;
 
-Map<String, String> selectedValues = {};
+// Map<String, String> selectedValues = {};
 
 class dropdownMenu extends StatefulWidget {
   final List<String> listData;
@@ -1081,137 +1081,222 @@ Future totalHours() async {
 //   }
 // }
 
-enum Track {
-  blue('PC', 1),
-  pink('PI', 2);
+// enum Track {
+//   blue('PC', 1),
+//   pink('PI', 2);
+//
+//   const Track(this.label, this.number);
+//   final String label;
+//   final int number;
+// }
+//
+// class CustomDropdown<T> extends StatefulWidget {
+//   final String label;
+//   final T? initialValue;
+//   final List<T> items;
+//   final Function(T) onSelected;
+//   final double width;
+//   final bool enableSearch;
+//   final bool enableFilter;
+//
+//   const CustomDropdown({
+//     required this.label,
+//     this.initialValue,
+//     required this.items,
+//     required this.onSelected,
+//     this.width = double.infinity,
+//     this.enableSearch = false,
+//     this.enableFilter = false,
+//   });
+//
+//   @override
+//   State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
+// }
+//
+// class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
+//   T? _selectedValue;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _selectedValue = widget.initialValue;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     bool keyboardIsOpened = MediaQuery.of(context).viewInsets.bottom != 0.0;
+//     final myTheme = Theme.of(context).colorScheme;
+//     return Column(
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 20),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               DropdownMenu<T>(
+//                 width: 200,
+//                 enableSearch: widget.enableSearch,
+//                 enableFilter: widget.enableFilter,
+//                 requestFocusOnTap: true,
+//                 inputDecorationTheme: InputDecorationTheme(
+//                   enabledBorder: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(10.0),
+//                     borderSide: BorderSide(
+//                       color: myTheme.primary,
+//                       width: 2,
+//                     ),
+//                   ),
+//                 ),
+//                 label: Text(widget.label,
+//                     style: TextStyle(color: myTheme.primary)),
+//                 onSelected: (T? value) => setState(() {
+//                   _selectedValue = value;
+//                   widget.onSelected(value!);
+//                 }),
+//                 dropdownMenuEntries: widget.items.map((T value) {
+//                   // Cast to access label property
+//                   return DropdownMenuEntry<T>(
+//                     value: value,
+//                     label: value.toString(),
+//                     // Adjust display based on enum type
+//                   );
+//                 }).toList(),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-  const Track(this.label, this.number);
-  final String label;
-  final int number;
-}
+String? change = '';
 
-class CustomDropdown<T> extends StatefulWidget {
-  final String label;
-  final T? initialValue;
-  final List<T> items;
-  final Function(T) onSelected;
-  final double width;
-  final bool enableSearch;
-  final bool enableFilter;
+final TextEditingController rank = TextEditingController();
+final TextEditingController birthDate = TextEditingController();
+final TextEditingController rlLevel = TextEditingController();
+final TextEditingController type = TextEditingController();
+final TextEditingController tracks = TextEditingController();
+final TextEditingController fac = TextEditingController();
 
-  const CustomDropdown({
-    required this.label,
-    this.initialValue,
-    required this.items,
-    required this.onSelected,
-    this.width = double.infinity,
-    this.enableSearch = false,
-    this.enableFilter = false,
+class DropdownMenuExample extends StatefulWidget {
+  final List<String> labels;
+  final String? hintText;
+  final dynamic controllerType;
+  final Function(String)? onSelectedValueChange;
+  final String boxlabel;
+
+  // final ValueChanged<String?> subject;
+
+  // final List<int> values;
+
+  const DropdownMenuExample({
+    super.key,
+    required this.labels,
+    required this.hintText,
+    required this.controllerType,
+    this.onSelectedValueChange,
+    required this.boxlabel,
+    // required this.subject,
   });
 
   @override
-  State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
+  State<DropdownMenuExample> createState() => _DropdownMenuExampleState();
 }
 
-class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
-  T? _selectedValue;
+class _DropdownMenuExampleState extends State<DropdownMenuExample> {
+  String? _selectedLabel;
 
   @override
   void initState() {
     super.initState();
-    _selectedValue = widget.initialValue;
+    // Initialize _selectedLabel with the first item in the list if desired:
+    _selectedLabel = widget.labels.first;
   }
 
   @override
   Widget build(BuildContext context) {
+    // print(_selectedLabel);
     final myTheme = Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DropdownMenu<T>(
-                width: 200,
-                enableSearch: widget.enableSearch,
-                enableFilter: widget.enableFilter,
-                requestFocusOnTap: true,
-                inputDecorationTheme: InputDecorationTheme(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(
-                      color: myTheme.primary,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                label: Text(widget.label,
-                    style: TextStyle(color: myTheme.primary)),
-                onSelected: (T? value) => setState(() {
-                  _selectedValue = value;
-                  widget.onSelected(value!);
-                }),
-                dropdownMenuEntries: widget.items.map((T value) {
-                  // Cast to access label property
-                  return DropdownMenuEntry<T>(
-                    value: value,
-                    label: value.toString(),
-                    // Adjust display based on enum type
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class DropdownMenuExample extends StatelessWidget {
-  final List<String> colorLabels;
-  final List<Color> colorValues;
-
-  const DropdownMenuExample({
-    super.key,
-    required this.colorLabels,
-    required this.colorValues,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 200,
-      height: 100,
+      // width: screenWidth * .8,
+      // height: 100,
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                DropdownMenu<int>(
-                  width: 200,
-                  initialSelection: 0,
-                  controller: TextEditingController(),
-                  requestFocusOnTap: true,
-                  label: const Text('Color'),
-                  onSelected: (int? index) {},
-                  dropdownMenuEntries: colorLabels
+                DropdownMenu<String>(
+                  width: screenWidth * .85,
+                  hintText: widget.hintText,
+                  menuHeight: 300,
+                  label: Text(widget.boxlabel),
+                  // initialSelection: 0,
+                  controller: widget.controllerType,
+                  requestFocusOnTap: false,
+                  inputDecorationTheme: InputDecorationTheme(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(
+                        color: myTheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  // label: const Text(widget.hintText),
+                  onSelected: (String? label) {
+                    setState(() {
+                      _selectedLabel = label;
+                      widget.onSelectedValueChange!(label!);
+
+                      // Perform actions based on the selected label here, e.g.,
+                      // update other UI elements or perform computations:
+                      // print('Selected label: $_selectedLabel');
+                      // ...
+                    });
+                  },
+                  dropdownMenuEntries: widget.labels
                       .asMap()
                       .entries
                       .map(
-                        (entry) => DropdownMenuEntry<int>(
-                            value: entry.key, label: entry.value.toString()),
+                        (entry) => DropdownMenuEntry<String>(
+                            value: entry.value.toString(),
+                            label: entry.value.toString()),
                       )
                       .toList(),
                 ),
               ],
             ),
-          )
+          ),
+          // SizedBox(
+          //   height: 5,
+          // )
         ],
       ),
+    );
+  }
+}
+
+class MyButton extends StatelessWidget {
+  final String text;
+
+  const MyButton({
+    Key? key,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        // Use debugPrint for more flexibility, print for simpler cases
+        print(type.text);
+        // print('Button pressed: $text');
+      },
+      child: Text(text),
     );
   }
 }
