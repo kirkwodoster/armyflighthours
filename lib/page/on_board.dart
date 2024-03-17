@@ -67,8 +67,9 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
               height: screenHeight * .95,
               padding: const EdgeInsets.only(bottom: 80),
               child: PageView(
-                allowImplicitScrolling: true,
-                physics: NeverScrollableScrollPhysics(),
+                // allowImplicitScrolling: true,
+                // physics: NeverScrollableScrollPhysics(),
+                physics: BouncingScrollPhysics(),
                 controller: controller,
                 onPageChanged: (index) {
                   setState(() {
@@ -98,7 +99,10 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           // mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            // Text('User Info'),
                             DropdownMenuExample(
+                                onSelectedValueChange: (label) =>
+                                    setState(() => selectedRank = rank.text),
                                 controllerType: rank,
                                 hintText: 'Rank',
                                 boxlabel: 'Rank',
@@ -117,8 +121,10 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                   'CIVILIAN',
                                 ]),
                             DropdownMenuExample(
+                              onSelectedValueChange: (label) => setState(
+                                  () => selectedMonth = birthDate.text),
                               controllerType: birthDate,
-                              hintText: 'Type',
+                              hintText: 'Birth Month',
                               boxlabel: 'Birth Month',
                               labels: [
                                 'JANUARY',
@@ -137,7 +143,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                             ),
                             DropdownMenuExample(
                               onSelectedValueChange: (label) =>
-                                  setState(() => label),
+                                  setState(() => selectedType = type.text),
                               controllerType: type,
                               boxlabel: 'PC or PI',
                               hintText: 'Type',
@@ -147,6 +153,8 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               visible: type.text ==
                                   "PC", // Use 'change' for visibility check
                               child: DropdownMenuExample(
+                                onSelectedValueChange: (label) => setState(
+                                    () => selectedpcTrack = tracks.text),
                                 boxlabel: 'PC Track',
                                 controllerType: tracks,
                                 hintText: 'Type',
@@ -164,24 +172,22 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                               visible: type.text ==
                                   "PI", // Use 'change' for visibility check
                               child: DropdownMenuExample(
-                                controllerType: fac,
-                                hintText: 'Type',
-                                boxlabel: 'FAC Level',
+                                onSelectedValueChange: (label) =>
+                                    setState(() => selectedRL = rlLevel.text),
+                                controllerType: rlLevel,
+                                hintText: 'Readiness Level',
+                                boxlabel: 'RL Level',
                                 labels: [
-                                  'FAC 1 ',
-                                  'FAC 2',
-                                  'FAC 3',
+                                  'RL 1 ',
+                                  'RL 2',
+                                  'RL 3',
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      SizedBox(height: 10),
+                      SizedBox(height: 100),
                       Form(
                         key: _totalKey,
                         child: Column(
@@ -189,12 +195,21 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                             userinputHours(
                                 label: 'Total Hours', controller: _totalHours),
                             SizedBox(height: 20),
-                            userinputHours(
-                                label: 'Total NVD Hours',
-                                controller: _totalNVD),
+                            // userinputHours(
+                            //     label: 'Total NVD Hours',
+                            //     controller: _totalNVD),
+                            // Padding(
+                            //   padding: EdgeInsets.only(
+                            //       bottom:
+                            //           MediaQuery.of(context).viewInsets.bottom),
+                            // )
                           ],
                         ),
                       ),
+                    ],
+                  ),
+                  Column(
+                    children: [
                       SizedBox(height: 20),
                       Form(
                           key: _semiKey,
@@ -376,22 +391,41 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                 onPressed: () {
                                   scrollController.jumpTo(0.0);
                                   FocusManager.instance.primaryFocus?.unfocus();
-                                  // controller.nextPage(
-                                  //   duration: const Duration(milliseconds: 500),
-                                  //   curve: Curves.easeInOut,
-                                  // );
-                                  // _totalKey.currentState!.validate()
+
                                   if (selectedRank != null &&
                                       selectedMonth != null &&
-                                      selectedFac != null &&
+                                      selectedType == 'PI' &&
                                       selectedRL != null) {
+                                    print('First if');
+
                                     controller.nextPage(
                                       duration:
                                           const Duration(milliseconds: 500),
                                       curve: Curves.easeInOut,
                                     );
-                                  } else if (selectedMonth == null ||
-                                      selectedFac == null) {
+                                  } else if (selectedRank != null &&
+                                      selectedMonth != null &&
+                                      selectedType == 'PC' &&
+                                      selectedpcTrack != null) {
+                                    print('Second if');
+                                    controller.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  } else if (_totalKey.currentState!
+                                      .validate()) {
+                                    controller.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  } else {
+                                    print('Else');
+                                    print('Selected Rank: $selectedRank');
+                                    print('Selected Month: $selectedMonth');
+                                    print('Selected Type: $selectedType');
+                                    print('Selected RL: $selectedRL');
                                     scrollController.jumpTo(0.0);
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
@@ -410,7 +444,7 @@ class _OnboardingPageState extends State<OnBoardingScreen> {
                                                   Radius.circular(15))),
                                           child: Center(
                                             child: Text(
-                                                'Select a Rank, Birth Month, FAC and RL',
+                                                'Select a Rank, Birth Month, and/or PC/PI',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14,
@@ -799,7 +833,11 @@ final _totalKey = GlobalKey<FormState>();
 final _semiKey = GlobalKey<FormState>();
 final _semisimKey = GlobalKey<FormState>();
 
-class userinputHours extends StatelessWidget {
+final _userinputHoursKey = GlobalKey();
+
+FocusNode fieldOne = FocusNode();
+
+class userinputHours extends StatefulWidget {
   final String label;
   final TextEditingController controller;
 
@@ -812,6 +850,28 @@ class userinputHours extends StatelessWidget {
   });
 
   @override
+  State<userinputHours> createState() => _userinputHoursState();
+}
+
+class _userinputHoursState extends State<userinputHours> {
+  late FocusNode myFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+
+    myFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    myFocusNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
@@ -819,29 +879,39 @@ class userinputHours extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(widget.label),
         SizedBox(height: 3),
         Container(
           width: screenWidth * 0.85, // 80% of screen width
-          // height: screenHeight * 0.05, // 10% of screen height
+          // height: screenHeight * 0.1, // 10% of screen height
           // height: 60,
           child: TextFormField(
             textAlign: TextAlign.left,
+            focusNode: myFocusNode,
+            // focusNode: fieldOne,
             // style: TextStyle(fontSize: 22),
             decoration: InputDecoration(
               isDense: true,
               hintText: "0",
+              // contentPadding: EdgeInsets.all(10),
               contentPadding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 2.0),
+                  EdgeInsets.symmetric(vertical: 15, horizontal: 5.0),
               enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: myTheme.primary),
-                  borderRadius: BorderRadius.circular(5.0)),
+                  borderSide: BorderSide(color: myTheme.primary, width: 2.0),
+                  borderRadius: BorderRadius.circular(10.0)),
               focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: myTheme.error),
-                  borderRadius: BorderRadius.circular(5.0)),
+                  borderRadius: BorderRadius.circular(10.0)),
             ),
+            onTap: () {
+              Scrollable.ensureVisible(
+                _userinputHoursKey.currentContext!,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            },
             keyboardType: TextInputType.number,
-            controller: controller,
+            controller: widget.controller,
             validator: (value) {
               double? parsedValue = double.tryParse(value!);
               if (parsedValue == null || parsedValue > 50000) {
@@ -1216,12 +1286,12 @@ class _DropdownMenuExampleState extends State<DropdownMenuExample> {
 
   @override
   Widget build(BuildContext context) {
-    // print(_selectedLabel);
     final myTheme = Theme.of(context).colorScheme;
     double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Container(
       // width: screenWidth * .8,
-      // height: 100,
+      // height: 150,
       child: Column(
         children: <Widget>[
           Padding(
@@ -1238,6 +1308,8 @@ class _DropdownMenuExampleState extends State<DropdownMenuExample> {
                   controller: widget.controllerType,
                   requestFocusOnTap: false,
                   inputDecorationTheme: InputDecorationTheme(
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 10.0),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide(
@@ -1276,27 +1348,6 @@ class _DropdownMenuExampleState extends State<DropdownMenuExample> {
           // )
         ],
       ),
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  final String text;
-
-  const MyButton({
-    Key? key,
-    required this.text,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        // Use debugPrint for more flexibility, print for simpler cases
-        print(type.text);
-        // print('Button pressed: $text');
-      },
-      child: Text(text),
     );
   }
 }
