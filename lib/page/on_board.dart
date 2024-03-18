@@ -886,6 +886,7 @@ class _userinputHoursState extends State<userinputHours> {
           // height: screenHeight * 0.1, // 10% of screen height
           // height: 60,
           child: TextFormField(
+            scrollPadding: EdgeInsets.only(bottom: 100),
             textAlign: TextAlign.left,
             focusNode: myFocusNode,
             // focusNode: fieldOne,
